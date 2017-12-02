@@ -5,10 +5,10 @@ clc
 clear
 close all
 load('../KITTI Trials/SWF_2011_09_26_drive_0051_sync_KLT.mat');
-%k1,k2Îª´°¿ÚÊ×Î²
+%k1,k2ä¸ºçª—å£é¦–å°¾
 k1 = kStart;
 k2 = k1+kappa;
-%K+1Îª´°¿Ú×´Ì¬
+%K+1ä¸ºçª—å£çŠ¶æ€
 K = k2 - k1;  %There are K + 1 total states, since x0 is the k1th state
 % v_var = 0.1*ones(3,1);
 % w_var = 0.1*ones(3,1);
@@ -124,7 +124,7 @@ for l_i = 1:numLandmarks
 end
 for kIdx = 1:K
         k = kIdx + k1;
-        %»ñµÃµÚkÖ¡Ïà»úÖĞµÄÓĞĞ§ÌØÕ÷µã
+        %è·å¾—ç¬¬kå¸§ç›¸æœºä¸­çš„æœ‰æ•ˆç‰¹å¾ç‚¹
         validLmObsId = find(y_k_j(1, k, :) > -1);
         %
         kState = currentStateStruct{kIdx+1};
@@ -135,17 +135,17 @@ for kIdx = 1:K
         % camStates{k}.q_CG        4x1 Global to camera rotation quaternion
         % camStates{k}.p_C_G       3x1 Camera Position in the Global frame
         % camStates{k}.trackedFeatureIds  1xM List of feature ids that are currently being tracked from that camera state
-        %¸üĞÂÌØÕ÷µã¹Û²â½á¹¹ÌåobservedLandmarkStructs
+        %æ›´æ–°ç‰¹å¾ç‚¹è§‚æµ‹ç»“æ„ä½“observedLandmarkStructs
         for lmId = validLmObsId'
-            %»ñÈ¡µÚkÖ¡µÄÓĞĞ§ËùÓĞÓĞĞ§ÌØÕ÷¹Û²â
+            %è·å–ç¬¬kå¸§çš„æœ‰æ•ˆæ‰€æœ‰æœ‰æ•ˆç‰¹å¾è§‚æµ‹
             yMeas = y_k_j(:, k, lmId);
-            %»ñÈ¡Global×ø±êÏµÏÂµ±Ç°Ö¡Ïà»ú×´Ì¬C_CG£¬p_C_G£¨Ğı×ª£¬Æ½ÒÆ£©
+            %è·å–Globalåæ ‡ç³»ä¸‹å½“å‰å¸§ç›¸æœºçŠ¶æ€C_CGï¼Œp_C_Gï¼ˆæ—‹è½¬ï¼Œå¹³ç§»ï¼‰
             camState = {};
             camState.C_CG = T_ci(1:3,1:3);
             camState.p_C_G = T_ic(1:3,4);
-            %½«µ±Ç°Ö¡Ïà»ú×´Ì¬Ìí¼Óµ½ÌØÕ÷µã¹Û²â½á¹¹ÌåobservedLandmarkStructs{lmId}.camStatesÖĞ
+            %å°†å½“å‰å¸§ç›¸æœºçŠ¶æ€æ·»åŠ åˆ°ç‰¹å¾ç‚¹è§‚æµ‹ç»“æ„ä½“observedLandmarkStructs{lmId}.camStatesä¸­
             observedLandmarkStructs{lmId}.camStates{end+1} = camState;
-            %½«ËùÓĞÌØÕ÷¹Û²âÏñËØ×ø±ê×ªÎªÏà»ú×ø±êÏµÏÂµÄÆë´Î×ø±êÌí¼Óµ½ÌØÕ÷µã¹Û²â½á¹¹ÌåobservedLandmarkStructs{lmId}.observationsÖĞ
+            %å°†æ‰€æœ‰ç‰¹å¾è§‚æµ‹åƒç´ åæ ‡è½¬ä¸ºç›¸æœºåæ ‡ç³»ä¸‹çš„é½æ¬¡åæ ‡æ·»åŠ åˆ°ç‰¹å¾ç‚¹è§‚æµ‹ç»“æ„ä½“observedLandmarkStructs{lmId}.observationsä¸­
             observedLandmarkStructs{lmId}.observations(:, end+1) = [(yMeas(1) - calibParams.c_u)/calibParams.f_u; (yMeas(2) - calibParams.c_v)/calibParams.f_v];
 
             %Find the ground truth position of the observed landmark
@@ -166,29 +166,29 @@ end
 
 %Triangulate all landmarks and keep track of which ones we are
 %triangulating
-%ÄÜ¹Û²âµ½ËùÓĞÌØÕ÷µÄÈ«²¿Ïà»úÊıÄ¿
+%èƒ½è§‚æµ‹åˆ°æ‰€æœ‰ç‰¹å¾çš„å…¨éƒ¨ç›¸æœºæ•°ç›®
 totalLandmarkObs = 0;
-%¿ÉÒÔ±»¹Û²âµ½µÄÌØÕ÷ID
+%å¯ä»¥è¢«è§‚æµ‹åˆ°çš„ç‰¹å¾ID
 observedLandmarkIds = [];
-%ÌØÕ÷µã¸öÊı
+%ç‰¹å¾ç‚¹ä¸ªæ•°
 totalUniqueObservedLandmarks = 0;
-%±éÀú¹Û²âÌØÕ÷µã½á¹¹ÌåobservedLandmarkStructsÖĞµÄÃ¿¸öÌØÕ÷µã,»Ö¸´ÌØÕ÷µã3D¿Õ¼ä×ø±ê£¬²¢»ñÈ¡ÏàÓ¦²ÎÊı
+%éå†è§‚æµ‹ç‰¹å¾ç‚¹ç»“æ„ä½“observedLandmarkStructsä¸­çš„æ¯ä¸ªç‰¹å¾ç‚¹,æ¢å¤ç‰¹å¾ç‚¹3Dç©ºé—´åæ ‡ï¼Œå¹¶è·å–ç›¸åº”å‚æ•°
 for lmId = 1:length(observedLandmarkStructs)
-    %Èç¹ûÄÜ¹Û²âµ½µ±Ç°ÌØÕ÷µÄÏà»úÊı´óÓÚ1
+    %å¦‚æœèƒ½è§‚æµ‹åˆ°å½“å‰ç‰¹å¾çš„ç›¸æœºæ•°å¤§äº1
     if length(observedLandmarkStructs{lmId}.camStates) > 1
-        %µÃµ½ÄÜ¹Û²âµ½¸ÃÌØÕ÷µÄËùÓĞÏà»ú×´Ì¬ºÍÌØÕ÷µãÔÚ¶ÔÓ¦Ïà»ú×ø±êÏµÏÂµÄÆë´Î×ø±ê
+        %å¾—åˆ°èƒ½è§‚æµ‹åˆ°è¯¥ç‰¹å¾çš„æ‰€æœ‰ç›¸æœºçŠ¶æ€å’Œç‰¹å¾ç‚¹åœ¨å¯¹åº”ç›¸æœºåæ ‡ç³»ä¸‹çš„é½æ¬¡åæ ‡
         camStates = observedLandmarkStructs{lmId}.camStates;
         observations = observedLandmarkStructs{lmId}.observations;
-        %Èı½Ç»¯»Ö¸´ÌØÕ÷µã3D¿Õ¼ä×ø±ê£¨¸ßË¹Å£¶ÙÓÅ»¯·½·¨£©
+        %ä¸‰è§’åŒ–æ¢å¤ç‰¹å¾ç‚¹3Dç©ºé—´åæ ‡ï¼ˆé«˜æ–¯ç‰›é¡¿ä¼˜åŒ–æ–¹æ³•ï¼‰
         [rho_pi_i, Jcost, RCOND] = calcGNPosEst(camStates, observations, noiseParams);
         if Jcost < JcostThresh*length(camStates)^2
-            %½«ÌØÕ÷µã3D¿Õ¼ä×ø±êÎ»ÖÃÌí¼Óµ½ÌØÕ÷µãÁĞ±írho_i_pj_i_estÖĞ
+            %å°†ç‰¹å¾ç‚¹3Dç©ºé—´åæ ‡ä½ç½®æ·»åŠ åˆ°ç‰¹å¾ç‚¹åˆ—è¡¨rho_i_pj_i_estä¸­
             rho_i_pj_i_est(:, lmId) = rho_pi_i;
-            %»ñÈ¡ÄÜ¹Û²âµ½ËùÓĞÌØÕ÷µÄÈ«²¿Ïà»úÊıÄ¿
+            %è·å–èƒ½è§‚æµ‹åˆ°æ‰€æœ‰ç‰¹å¾çš„å…¨éƒ¨ç›¸æœºæ•°ç›®
             totalLandmarkObs = totalLandmarkObs + length(observedLandmarkStructs{lmId}.camStates);
-            %»ñÈ¡ÌØÕ÷µã¸öÊı
+            %è·å–ç‰¹å¾ç‚¹ä¸ªæ•°
             totalUniqueObservedLandmarks = totalUniqueObservedLandmarks + 1;
-            %½«ÌØÕ÷µãIDºÅÌí¼Óµ½observedLandmarkIdsÖĞ
+            %å°†ç‰¹å¾ç‚¹IDå·æ·»åŠ åˆ°observedLandmarkIdsä¸­
             observedLandmarkIds(end+1) = lmId;
         end
     end
@@ -196,7 +196,7 @@ end
 
 
 %Define the optimal state
-%¶¨Òå×îÓÅ×´Ì¬
+%å®šä¹‰æœ€ä¼˜çŠ¶æ€
 optimalStateStruct = currentStateStruct;
 Jbest = Inf;
 dx = Inf;
@@ -204,7 +204,7 @@ dx = Inf;
 for optIdx = 1:maxOptIter+1
 
 %Error Vector
-%¶¨ÒåÎó²îÏòÁ¿errorVector[»¬¶¯´°¿ÚÄÚK¸öÏà»úÎ»×Ë£¨6*K£©£»M¸öÌØÕ÷µãÎ»ÖÃ(2*M)]£¬²Î¿¼ÎÄÏ×1£º¹«Ê½1
+%å®šä¹‰è¯¯å·®å‘é‡errorVector[æ»‘åŠ¨çª—å£å†…Kä¸ªç›¸æœºä½å§¿ï¼ˆ6*Kï¼‰ï¼›Mä¸ªç‰¹å¾ç‚¹ä½ç½®(2*M)]ï¼Œå‚è€ƒæ–‡çŒ®1ï¼šå…¬å¼1
 errorVector = NaN(6*K+pixMeasDim*totalLandmarkObs, 1);
 %This helper index will keep track of where we need to insert our next
 %errors

@@ -4,7 +4,7 @@ function [ cellArray ] = removeCells(inputCellArray, deleteIdx)
 
 cellArray = inputCellArray;
 cellArray(deleteIdx) = [];
-cellArray(cellfun(@isempty, cellArray)) = [];%È¥µôÊý×éÔªËØÎª¿ÕµÄÊý×é
+cellArray(cellfun(@isempty, cellArray)) = [];%åŽ»æŽ‰æ•°ç»„å…ƒç´ ä¸ºç©ºçš„æ•°ç»„
 
 end
 

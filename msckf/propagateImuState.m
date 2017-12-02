@@ -1,40 +1,40 @@
 function imuState_prop = propagateImuState(imuState_k, measurements_k)
-%º¯Êı¹¦ÄÜ£º¸ù¾İIMU²âÁ¿Öµ¸üĞÂIMUµÄ×´Ì¬£¨ËÄÔªÊı ÍÓÂİÒÇÁãÆ«ÓëËÙ¶ÈÁãÆ« Î»ÖÃ£©
+%å‡½æ•°åŠŸèƒ½ï¼šæ ¹æ®IMUæµ‹é‡å€¼æ›´æ–°IMUçš„çŠ¶æ€ï¼ˆå››å…ƒæ•° é™€èºä»ªé›¶åä¸é€Ÿåº¦é›¶å ä½ç½®ï¼‰
 %
-%·µ»ØÖµ£º
-%      imuState_prop£ºIMU²¿·ÖµÄ×´Ì¬Á¿¸üĞÂºóµÄ½á¹û
-%ÊäÈëÖµ£º
-%      imuState_k£ºÉÏÒ»´ÎµÄIMU×´Ì¬
-%      measurements_k£ºµ±´ÎIMU²âÁ¿Öµ
+%è¿”å›å€¼ï¼š
+%      imuState_propï¼šIMUéƒ¨åˆ†çš„çŠ¶æ€é‡æ›´æ–°åçš„ç»“æœ
+%è¾“å…¥å€¼ï¼š
+%      imuState_kï¼šä¸Šä¸€æ¬¡çš„IMUçŠ¶æ€
+%      measurements_kï¼šå½“æ¬¡IMUæµ‹é‡å€¼
 
 % prop == propagated to k+1
 
     C_IG = quatToRotMat(imuState_k.q_IG);
     
     % Rotation state
-    %IMUÖĞÍÓÂİÒÇ²âÁ¿Öµ£¨È¥³ıÁãÆ«£©»ı·ÖµÃµ½½ÇÔöÁ¿£¬psi = (w-bias)*dt
+    %IMUä¸­é™€èºä»ªæµ‹é‡å€¼ï¼ˆå»é™¤é›¶åï¼‰ç§¯åˆ†å¾—åˆ°è§’å¢é‡ï¼Œpsi = (w-bias)*dt
     psi = (measurements_k.omega - imuState_k.b_g) * measurements_k.dT;
-    %ÓÃÍÓÂİÒÇ²âÁ¿µÄ½ÇËÙ¶È¸üĞÂËÄÔªÊı
-    %¡¡|q1|    |q1|      £ü 0    wz  -wy  wx ||q1|  
-    %¡¡|q2| := |q2| + 1/2£ü-wz   0    wx  wy ||q2|dt
-    %¡¡|q3|    |q3|      £ü wy  -wx   0   wz ||q3|
-    %¡¡|q0|    |q0|      £ü-wx  -wy  -wz   0 ||q0|
+    %ç”¨é™€èºä»ªæµ‹é‡çš„è§’é€Ÿåº¦æ›´æ–°å››å…ƒæ•°
+    %ã€€|q1|    |q1|      ï½œ 0    wz  -wy  wx ||q1|  
+    %ã€€|q2| := |q2| + 1/2ï½œ-wz   0    wx  wy ||q2|dt
+    %ã€€|q3|    |q3|      ï½œ wy  -wx   0   wz ||q3|
+    %ã€€|q0|    |q0|      ï½œ-wx  -wy  -wz   0 ||q0|
     imuState_prop.q_IG = imuState_k.q_IG + 0.5 * omegaMat(psi) * imuState_k.q_IG;
 %     diffRot = axisAngleToRotMat(psi);
 %     C_IG_prop = diffRot * C_IG;
 %     imuState_prop.q_IG = rotMatToQuat(C_IG_prop);
     
     %Unit length quaternion
-    %¹éÒ»»¯ËÄÔªÊı
+    %å½’ä¸€åŒ–å››å…ƒæ•°
     imuState_prop.q_IG = imuState_prop.q_IG/norm(imuState_prop.q_IG);
     
     % Bias states
-    %ÍÓÂİÒÇÁãÆ«ÓëËÙ¶ÈÁãÆ«µÄ¸üĞÂ¾ØÕóÎªµ¥Î»¾ØÕó
+    %é™€èºä»ªé›¶åä¸é€Ÿåº¦é›¶åçš„æ›´æ–°çŸ©é˜µä¸ºå•ä½çŸ©é˜µ
     imuState_prop.b_g = imuState_k.b_g;
     imuState_prop.b_v = imuState_k.b_v;
     
     % Translation state
-    %IMUÖĞ²âÁ¿µÄËÙ¶ÈÍ¨¹ı»ı·Ö¸üĞÂÎ»ÖÃ£¨Î»ÖÃÎªglobal×ø±êÏµ£©
+    %IMUä¸­æµ‹é‡çš„é€Ÿåº¦é€šè¿‡ç§¯åˆ†æ›´æ–°ä½ç½®ï¼ˆä½ç½®ä¸ºglobalåæ ‡ç³»ï¼‰
     d = (measurements_k.v - imuState_k.b_v) * measurements_k.dT;
     imuState_prop.p_I_G = C_IG' * d + imuState_k.p_I_G;
     

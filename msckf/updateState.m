@@ -1,11 +1,11 @@
 function msckfState_up = updateState(msckfState, deltaX)
-%º¯Êı¹¦ÄÜ£º¸ù¾İÎó²î×´Ì¬¸üĞÂMSCKF×´Ì¬£¬x_true := x_nominal + detx
+%å‡½æ•°åŠŸèƒ½ï¼šæ ¹æ®è¯¯å·®çŠ¶æ€æ›´æ–°MSCKFçŠ¶æ€ï¼Œx_true := x_nominal + detx
 %
-%·µ»ØÖµ£º
-%      msckfState_up£º¸üĞÂºóµÄMSCKF×´Ì¬
-%ÊäÈëÖµ£º
-%      msckfState£ºÎ´¸üĞÂÇ°µÄ×´Ì¬
-%      deltaX£ºÂË²¨ºóµÃµ½µÄÎó²î×´Ì¬Á¿
+%è¿”å›å€¼ï¼š
+%      msckfState_upï¼šæ›´æ–°åçš„MSCKFçŠ¶æ€
+%è¾“å…¥å€¼ï¼š
+%      msckfStateï¼šæœªæ›´æ–°å‰çš„çŠ¶æ€
+%      deltaXï¼šæ»¤æ³¢åå¾—åˆ°çš„è¯¯å·®çŠ¶æ€é‡
 
 % Updates MSCKF state with deltaX
 
@@ -13,21 +13,21 @@ function msckfState_up = updateState(msckfState, deltaX)
     msckfState_up = msckfState;
 
     % Update IMU State
-    % Îó²î×´Ì¬±äÁ¿¸³Öµ
+    % è¯¯å·®çŠ¶æ€å˜é‡èµ‹å€¼
     deltatheta_IG = deltaX(1:3);
     deltab_g = deltaX(4:6);
     deltab_v = deltaX(7:9);
     deltap_I_G = deltaX(10:12);
-    % ½«×ËÌ¬½ÇÎó²î×ª»»ÎªÔöÁ¿ËÄÔªÊı q = [deltaq; 1]
+    % å°†å§¿æ€è§’è¯¯å·®è½¬æ¢ä¸ºå¢é‡å››å…ƒæ•° q = [deltaq; 1]
     deltaq_IG = buildUpdateQuat(deltatheta_IG);
-    %²½Öè1£º¸üĞÂIMU×´Ì¬ x_true := x_nominal + detx
+    %æ­¥éª¤1ï¼šæ›´æ–°IMUçŠ¶æ€ x_true := x_nominal + detx
     msckfState_up.imuState.q_IG = quatLeftComp(deltaq_IG) * msckfState.imuState.q_IG;
     msckfState_up.imuState.b_g = msckfState.imuState.b_g + deltab_g;
     msckfState_up.imuState.b_v = msckfState.imuState.b_v + deltab_v;
     msckfState_up.imuState.p_I_G = msckfState.imuState.p_I_G + deltap_I_G;
     
     % Update camera states
-    %²½Öè2£º¸üĞÂÏà»ú×´Ì¬ x_true := x_nominal + detx
+    %æ­¥éª¤2ï¼šæ›´æ–°ç›¸æœºçŠ¶æ€ x_true := x_nominal + detx
     for i = 1:size(msckfState.camStates, 2)
         qStart = 12 + 6*(i-1) + 1;
         pStart = qStart+3;

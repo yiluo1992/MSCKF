@@ -12,39 +12,39 @@ load(['../datasets/' fileName]);
 
 tic
 %Set number of landmarks
-%»ñÈ¡Êý¾Ý¼¯ÌØÕ÷µã¸öÊý
+%èŽ·å–æ•°æ®é›†ç‰¹å¾ç‚¹ä¸ªæ•°
 numLandmarks = size(y_k_j,3);
 
 %Set up appropriate structs
-%ÉèÖÃÏà»úÄÚ²Î½á¹¹Ìå
+%è®¾ç½®ç›¸æœºå†…å‚ç»“æž„ä½“
 calibParams.c_u = cu;
 calibParams.c_v = cv;
 calibParams.f_u = fu;
 calibParams.f_v = fv;
 calibParams.b = b;
 
-%ÉèÖÃ»úÌåµ½Ïà»úµÄÐý×ªÆ½ÒÆ±ä»»½á¹¹ÌåÒÔ¼°¶ÔÓ¦µÄSE(3)¾ØÕó
+%è®¾ç½®æœºä½“åˆ°ç›¸æœºçš„æ—‹è½¬å¹³ç§»å˜æ¢ç»“æž„ä½“ä»¥åŠå¯¹åº”çš„SE(3)çŸ©é˜µ
 vehicleCamTransform.C_cv = C_c_v;
 vehicleCamTransform.rho_cv_v = rho_v_c_v;
 T_cv = [C_c_v -C_c_v*rho_v_c_v; 0 0 0 1];
 
 %Set up the noise parameters for MSCKF calcGNPosEst
-%ÉèÖÃMSCKF calcGNPosEstÖÐµÄÔëÉù²ÎÊý
+%è®¾ç½®MSCKF calcGNPosEstä¸­çš„å™ªå£°å‚æ•°
 v_var = 0.1*ones(3,1);
 w_var = 0.1*ones(3,1);
-%ÉèÖÃÏñËØÔëÉù·½²î
+%è®¾ç½®åƒç´ å™ªå£°æ–¹å·®
 y_var = 5^2*ones(2,1);                 % pixel coord var
 noiseParams.u_var_prime = y_var(1)/fu^2;
 noiseParams.v_var_prime = y_var(2)/fv^2;
 
 %Set up sliding window
-%ÉèÖÃLMÓÅ»¯ÖÐµÄ²ÎÊý
+%è®¾ç½®LMä¼˜åŒ–ä¸­çš„å‚æ•°
 LMLambda = 1e-4;
 lineLambda = 0.25;
 JcostThresh = 0.1e-2;
 useMonoCamera = true; %If true, only left camera will be used
 
-%ÉèÖÃ»¬¶¯´°¿Ú³ß´çºÍ×î´óµü´ú´ÎÊý
+%è®¾ç½®æ»‘åŠ¨çª—å£å°ºå¯¸å’Œæœ€å¤§è¿­ä»£æ¬¡æ•°
 kappa = 10; %Sliding window size
 maxOptIter = 5;
 
@@ -54,11 +54,11 @@ kEnd = size(y_k_j,2) - kappa - 1
 
 k1 = kStart;
 k2 = k1+kappa;
-%»¬¶¯´°¿ÚÖÐ×´Ì¬¸öÊý
+%æ»‘åŠ¨çª—å£ä¸­çŠ¶æ€ä¸ªæ•°
 K = k2 - k1;  %There are K + 1 total states, since x0 is the k1th state
 
 %% Setup
-%¸ù¾ÝÊ¹ÓÃµÄÏà»úÀàÐÍÈ·¶¨ÏñËØ²âÁ¿Î¬Êý£¬µ¥Ä¿Îª2£¬Ë«Ä¿Îª4
+%æ ¹æ®ä½¿ç”¨çš„ç›¸æœºç±»åž‹ç¡®å®šåƒç´ æµ‹é‡ç»´æ•°ï¼Œå•ç›®ä¸º2ï¼ŒåŒç›®ä¸º4
 if useMonoCamera
     pixMeasDim = 2;
 else
@@ -68,9 +68,9 @@ end
 initialStateStruct = {};
     
 % Extract noise values
-%³õÊ¼»¯²âÁ¿ÔëÉùÐ­·½²î
+%åˆå§‹åŒ–æµ‹é‡å™ªå£°åæ–¹å·®
 Q = diag([v_var; w_var]);
-%¸ù¾ÝÊ¹ÓÃµÄÏà»úÀàÐÍ³õÊ¼»¯¹Û²âÔëÉù£¬µ¥Ä¿Îª2*2¾ØÕó£¬Ë«Ä¿Îª4*4µ¥Î»Õó
+%æ ¹æ®ä½¿ç”¨çš„ç›¸æœºç±»åž‹åˆå§‹åŒ–è§‚æµ‹å™ªå£°ï¼Œå•ç›®ä¸º2*2çŸ©é˜µï¼ŒåŒç›®ä¸º4*4å•ä½é˜µ
 if useMonoCamera
     R = diag(y_var);
     %R = diag(y_var(1:2));
@@ -82,7 +82,7 @@ end
 %% First create the initial guess using dead reackoning
 
 %Use ground truth for the first state
-%¸ù¾Ý²Î¿¼Öµ»ñµÃ³õÊ¼»¯×´Ì¬C_vi£¬r_vi_i£¬k(Ðý×ª£¬Î»ÖÃ£¬ID)
+%æ ¹æ®å‚è€ƒå€¼èŽ·å¾—åˆå§‹åŒ–çŠ¶æ€C_viï¼Œr_vi_iï¼Œk(æ—‹è½¬ï¼Œä½ç½®ï¼ŒID)
 firstState.C_vi = Cfrompsi(theta_vk_i(:,k1));
 if isnan(firstState.C_vi(1,1))
     firstState.C_vi = eye(3);
@@ -93,7 +93,7 @@ initialStateStruct{1} = firstState;
 
 
 %There are K + 1 states (there is a '0' state)
-%Í¨¹ýIMUµÄ²âÁ¿Öµ£¨½ÇËÙ¶ÈºÍËÙ¶È£©¸üÐÂµÚÒ»¸ö»¬¶¯´°¿ÚÖÐµÄËùÓÐ×´Ì¬£¨K=10£©
+%é€šè¿‡IMUçš„æµ‹é‡å€¼ï¼ˆè§’é€Ÿåº¦å’Œé€Ÿåº¦ï¼‰æ›´æ–°ç¬¬ä¸€ä¸ªæ»‘åŠ¨çª—å£ä¸­çš„æ‰€æœ‰çŠ¶æ€ï¼ˆK=10ï¼‰
 for kIdx = 1:K
     k = kIdx + k1;
     imuMeasurement.omega = w_vk_vk_i(:, k-1);
@@ -105,7 +105,7 @@ end
 
 
 %% IMU Only
-%Í¨¹ýIMUµÄ²âÁ¿Öµ£¨½ÇËÙ¶ÈºÍËÙ¶È£©½øÐÐ×´Ì¬¸üÐÂ£¬ÓÃÓÚ»æÍ¼¶Ô±È
+%é€šè¿‡IMUçš„æµ‹é‡å€¼ï¼ˆè§’é€Ÿåº¦å’Œé€Ÿåº¦ï¼‰è¿›è¡ŒçŠ¶æ€æ›´æ–°ï¼Œç”¨äºŽç»˜å›¾å¯¹æ¯”
 imuOnlyStateStruct{1} = firstState;
 %There are K + 1 states (there is a '0' state)
 for k = kStart+1:kEnd+1
@@ -123,7 +123,7 @@ stateVecHistStruct = {};
 stateVecHistStruct{1} = firstState;
 
 %stateSigmaHistMat = [];
-%¶¯Ì¬»æÖÆÆ½Ãæ¹ì¼£Í¼£¬»æÖÆµÚÒ»¸öµã
+%åŠ¨æ€ç»˜åˆ¶å¹³é¢è½¨è¿¹å›¾ï¼Œç»˜åˆ¶ç¬¬ä¸€ä¸ªç‚¹
 figure
 plot(-firstState.r_vi_i(2),firstState.r_vi_i(1), '*b')
 hold on;
@@ -149,16 +149,16 @@ k2 = k1+kappa;
 
 %To initialize G-N, we propagate all the states for the first window
 %and then only propagate the most recent state, re-using the rest
-%³õÊ¼»¯¸ßË¹Å£¶Ùµü´ú
-%Èç¹ûÊÇµÚÒ»Ö¡£¬ÔòÓÃÇ°N(window size)¸öIMUµÄÔ¤²â×´Ì¬³õÊ¼»¯µÚÒ»¸ö»¬¶¯´°¿Ú£¬·ñÔòÔ¤²â×î½üµÄÒ»Ö¡×´Ì¬Ìí¼Óµ½»¬¶¯´°¿ÚÖÐ
-%Ê¹ÓÃIMUÊý¾Ý¸üÐÂµ±Ç°´°¿ÚÖÐµÄ×´Ì¬
+%åˆå§‹åŒ–é«˜æ–¯ç‰›é¡¿è¿­ä»£
+%å¦‚æžœæ˜¯ç¬¬ä¸€å¸§ï¼Œåˆ™ç”¨å‰N(window size)ä¸ªIMUçš„é¢„æµ‹çŠ¶æ€åˆå§‹åŒ–ç¬¬ä¸€ä¸ªæ»‘åŠ¨çª—å£ï¼Œå¦åˆ™é¢„æµ‹æœ€è¿‘çš„ä¸€å¸§çŠ¶æ€æ·»åŠ åˆ°æ»‘åŠ¨çª—å£ä¸­
+%ä½¿ç”¨IMUæ•°æ®æ›´æ–°å½“å‰çª—å£ä¸­çš„çŠ¶æ€
 if k1 == kStart
-        %¶ÔÓÚµÚÒ»Ö¡Êý¾Ý£¬Ö±½ÓÓÃ³õÊ¼»¯´°¿Ú£¨initialStateStruct£©³õÊ¼»¯µ±Ç°´°¿Ú£¨currentStateStruct£©
+        %å¯¹äºŽç¬¬ä¸€å¸§æ•°æ®ï¼Œç›´æŽ¥ç”¨åˆå§‹åŒ–çª—å£ï¼ˆinitialStateStructï¼‰åˆå§‹åŒ–å½“å‰çª—å£ï¼ˆcurrentStateStructï¼‰
         currentStateStruct = initialStateStruct;
-        %³õÊ¼»¯3Dµã×ø±ê¾ØÕó
+        %åˆå§‹åŒ–3Dç‚¹åæ ‡çŸ©é˜µ
         rho_i_pj_i_est = NaN(3, numLandmarks);
 else
-        %´°¿ÚÍùºó»¬¶¯Ò»¸ö×´Ì¬
+        %çª—å£å¾€åŽæ»‘åŠ¨ä¸€ä¸ªçŠ¶æ€
         currentStateStruct = currentStateStruct(2:end);
 
         %Extract the measurement
@@ -167,14 +167,14 @@ else
         deltaT = t(k2) - t(k2-1);
 
         %Propagate the state forward
-        %ÓÃIMU²âÁ¿Êý¾Ý¶Ô´°¿ÚÖÐµÄ×´Ì¬½øÐÐÔ¤²â¸üÐÂ
+        %ç”¨IMUæµ‹é‡æ•°æ®å¯¹çª—å£ä¸­çš„çŠ¶æ€è¿›è¡Œé¢„æµ‹æ›´æ–°
         currentStateStruct{end+1} = propagateState(currentStateStruct{end}, imuMeasurement, deltaT);
 end
 
 % Initialize the landmark positions (start fresh each window)
-%³õÊ¼»¯ÌØÕ÷µãÎ»ÖÃÏòÁ¿
+%åˆå§‹åŒ–ç‰¹å¾ç‚¹ä½ç½®å‘é‡
 rho_i_pj_i_est = NaN(3, numLandmarks);
-%³õÊ¼»¯ÌØÕ÷µã¶ÔÓ¦µÄ¹Û²â½á¹¹ÌåcamStates£¬observations£¨Ïà»ú×´Ì¬£¬ÌØÕ÷µã¹Û²â£©
+%åˆå§‹åŒ–ç‰¹å¾ç‚¹å¯¹åº”çš„è§‚æµ‹ç»“æž„ä½“camStatesï¼Œobservationsï¼ˆç›¸æœºçŠ¶æ€ï¼Œç‰¹å¾ç‚¹è§‚æµ‹ï¼‰
 observedLandmarkStructs = {};
 for l_i = 1:numLandmarks
        observedLandmarkStructs{l_i}.camStates = {};
@@ -182,7 +182,7 @@ for l_i = 1:numLandmarks
 end
 for kIdx = 1:K
         k = kIdx + k1;
-        %»ñµÃÓÐÐ§µÄÌØÕ÷µãID
+        %èŽ·å¾—æœ‰æ•ˆçš„ç‰¹å¾ç‚¹ID
         validLmObsId = find(y_k_j(1, k, :) > -1);
         kState = currentStateStruct{kIdx+1};
         T_vi = [kState.C_vi -kState.C_vi*kState.r_vi_i; 0 0 0 1];

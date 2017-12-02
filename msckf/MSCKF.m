@@ -34,7 +34,7 @@ dataDir = '../datasets';
 % fileName = '2011_09_26_drive_0051_sync_KLT'; kStart = 2; kEnd = 114;
 % fileName = '2011_09_26_drive_0095_sync_KLT'; kStart = 2; kEnd = 139;
 
-%²½Öè1£º¼ÓÔØÊı¾İ
+%æ­¥éª¤1ï¼šåŠ è½½æ•°æ®
 load(sprintf('%s/%s.mat',dataDir,fileName));
 
 % r_i_vk_i = p_vi_i;
@@ -44,11 +44,11 @@ load(sprintf('%s/%s.mat',dataDir,fileName));
 % kStart = 1215; kEnd = 1715;
 
 %Set constant
-%×Ü¹²Îª4*frames*features£¬µÃµ½ÌØÕ÷µãµÄ¸öÊı
+%æ€»å…±ä¸º4*frames*featuresï¼Œå¾—åˆ°ç‰¹å¾ç‚¹çš„ä¸ªæ•°
 numLandmarks = size(y_k_j,3);
 
 %Set up the camera parameters
-%Ïà»úÄÚ²Î£¬IMUµ½Ïà»úµÄ±ä»» Camera = q_CI * IMU + p_C_I
+%ç›¸æœºå†…å‚ï¼ŒIMUåˆ°ç›¸æœºçš„å˜æ¢ Camera = q_CI * IMU + p_C_I
 camera.c_u      = cu;                   % Principal point [u pixels]
 camera.c_v      = cv;                   % Principal point [v pixels]
 camera.f_u      = fu;                   % Focal length [u pixels]
@@ -58,25 +58,25 @@ camera.q_CI     = rotMatToQuat(C_c_v);  % 4x1 IMU-to-Camera rotation quaternion
 camera.p_C_I    = rho_v_c_v;            % 3x1 Camera position in IMU frame
 
 %Set up the noise parameters
-%³õÊ¼»¯Ïà»ú²âÁ¿ÔëÉù11¸öÏñËØµã£¬[Pleft_u, Pleft_v, Pright_u, Pright_v]
+%åˆå§‹åŒ–ç›¸æœºæµ‹é‡å™ªå£°11ä¸ªåƒç´ ç‚¹ï¼Œ[Pleft_u, Pleft_v, Pright_u, Pright_v]
 y_var = 11^2 * ones(1,4);               % pixel coord var 121
 noiseParams.u_var_prime = y_var(1)/camera.f_u^2;
 noiseParams.v_var_prime = y_var(2)/camera.f_v^2;
 
-%²½Öè2£º³õÊ¼»¯imuÔ¤²âĞ­·½²îºÍ²âÁ¿Ğ­·½²î¾ØÕó
-%²½Öè2.1£º³õÊ¼»¯²âÁ¿Ğ­·½²î¾ØÕó
-%½ÇËÙ¶È²âÁ¿Ğ­·½²î
+%æ­¥éª¤2ï¼šåˆå§‹åŒ–imué¢„æµ‹åæ–¹å·®å’Œæµ‹é‡åæ–¹å·®çŸ©é˜µ
+%æ­¥éª¤2.1ï¼šåˆå§‹åŒ–æµ‹é‡åæ–¹å·®çŸ©é˜µ
+%è§’é€Ÿåº¦æµ‹é‡åæ–¹å·®
 w_var = 4e-2 * ones(1,3);              % rot vel var0.04
-%ËÙ¶ÈĞ­·½²î
+%é€Ÿåº¦åæ–¹å·®
 v_var = 4e-2 * ones(1,3);              % lin vel var
-%ÍÓÂİÒÇÁãÆ«Ğ­·½²î
+%é™€èºä»ªé›¶ååæ–¹å·®
 dbg_var = 1e-6 * ones(1,3);            % gyro bias change var
-%ËÙ¶ÈÁãÆ«Ğ­·½²î
+%é€Ÿåº¦é›¶ååæ–¹å·®
 dbv_var = 1e-6 * ones(1,3);            % vel bias change var
-%¹¹ÔìËùÓĞ×´Ì¬Á¿µÄ³õÊ¼Ğ­·½²î¾ØÕó
+%æ„é€ æ‰€æœ‰çŠ¶æ€é‡çš„åˆå§‹åæ–¹å·®çŸ©é˜µ
 noiseParams.Q_imu = diag([w_var, dbg_var, v_var, dbv_var]);
 
-%²½Öè2.2£º³õÊ¼»¯×´Ì¬Á¿Ô¤²âĞ­·½²î¾ØÕó
+%æ­¥éª¤2.2ï¼šåˆå§‹åŒ–çŠ¶æ€é‡é¢„æµ‹åæ–¹å·®çŸ©é˜µ
 q_var_init = 1e-6 * ones(1,3);         % init rot var
 p_var_init = 1e-6 * ones(1,3);         % init pos var
 bg_var_init = 1e-6 * ones(1,3);        % init gyro bias var
@@ -84,8 +84,8 @@ bv_var_init = 1e-6 * ones(1,3);        % init vel bias var
 noiseParams.initialIMUCovar = diag([q_var_init, bg_var_init, bv_var_init, p_var_init]);
    
 % MSCKF parameters
-% ÉèÖÃMSCKF²ÎÊı
-% ÌØÕ÷µãÖÁÉÙ±»¸ú×Ù10Ö¡ÒÔÉÏ
+% è®¾ç½®MSCKFå‚æ•°
+% ç‰¹å¾ç‚¹è‡³å°‘è¢«è·Ÿè¸ª10å¸§ä»¥ä¸Š
 msckfParams.minTrackLength = 10;        % Set to inf to dead-reckon only
 msckfParams.maxTrackLength = Inf;      % Set to inf to wait for features to go out of view
 msckfParams.maxGNCostNorm  = 1e-2;     % Set to inf to allow any triangulation, no matter how bad
@@ -119,9 +119,9 @@ prunedStates = {};
 
 
 % Measurements as structures all indexed in a cell array
-%diffº¯ÊıÍ¨¹ıÎ¢·ÖtÏòÁ¿µÃµ½{0£¬dT1,dT2,dT3...}
+%diffå‡½æ•°é€šè¿‡å¾®åˆ†tå‘é‡å¾—åˆ°{0ï¼ŒdT1,dT2,dT3...}
 dT = [0, diff(t)];
-%µÃµ½ÏòÁ¿tµÄÔªËØ¸öÊı
+%å¾—åˆ°å‘é‡tçš„å…ƒç´ ä¸ªæ•°
 measurements = cell(1,numel(t));
 % groundTruthStates = cell(1,numel(t));
 % groundTruthMap = rho_i_pj_i;
@@ -129,49 +129,49 @@ measurements = cell(1,numel(t));
 % Important: Because we're idealizing our pixel measurements and the
 % idealized measurements could legitimately be -1, replace our invalid
 % measurement flag with NaN
-%±éÀúy_k_jÖĞËùÓĞÔªËØ£¬Èç¹ûÊı¾İÖĞÓĞ-1£¬Ôò¸ÄÎªÎŞÇî´ó
+%éå†y_k_jä¸­æ‰€æœ‰å…ƒç´ ï¼Œå¦‚æœæ•°æ®ä¸­æœ‰-1ï¼Œåˆ™æ”¹ä¸ºæ— ç©·å¤§
 y_k_j(y_k_j == -1) = NaN;
 
-%²½Öè3£ºµ¼Èë²âÁ¿Êı¾İºÍ²Î¿¼Öµ£ºmeasurementsÓëgroundTruthStates
-%measurements£º[dt,y,omega,v],dt:Ê±¼ä¼ä¸ô y:ÌØÕ÷µãÔÚÏà»ú×ø±êÏµÏÂµÄÎ»ÖÃ omegaÊÇ»úÌå½ÇËÙ¶È²âÁ¿Öµ vÊÇÏßËÙ¶È
+%æ­¥éª¤3ï¼šå¯¼å…¥æµ‹é‡æ•°æ®å’Œå‚è€ƒå€¼ï¼šmeasurementsä¸groundTruthStates
+%measurementsï¼š[dt,y,omega,v],dt:æ—¶é—´é—´éš” y:ç‰¹å¾ç‚¹åœ¨ç›¸æœºåæ ‡ç³»ä¸‹çš„ä½ç½® omegaæ˜¯æœºä½“è§’é€Ÿåº¦æµ‹é‡å€¼ væ˜¯çº¿é€Ÿåº¦
 %groundTruthStates:[imuState:q_IG,p_I_G
 %                   camState:q_IG,p_I_G]
 for state_k = kStart:kEnd 
     measurements{state_k}.dT    = dT(state_k);                      % sampling times
-    %yÎª×óÏà»ústate_kÖ¡ËùÓĞµÄÌØÕ÷µã£¬yÎª2*featuresÎ¬µÄ¾ØÕó
-    measurements{state_k}.y     = squeeze(y_k_j(1:2,state_k,:));    % left camera only ÈıÎ¬Ñ¹Ëõ³É¶şÎ¬µÃµ½Ò»Ö¡µÄÌØÕ÷µã
-    %OmegaÎªstate_kÖ¡µÄËùÓĞ½ÇËÙ¶È£¬omegaÎª3*1Î¬µÄÁĞÏòÁ¿
+    %yä¸ºå·¦ç›¸æœºstate_kå¸§æ‰€æœ‰çš„ç‰¹å¾ç‚¹ï¼Œyä¸º2*featuresç»´çš„çŸ©é˜µ
+    measurements{state_k}.y     = squeeze(y_k_j(1:2,state_k,:));    % left camera only ä¸‰ç»´å‹ç¼©æˆäºŒç»´å¾—åˆ°ä¸€å¸§çš„ç‰¹å¾ç‚¹
+    %Omegaä¸ºstate_kå¸§çš„æ‰€æœ‰è§’é€Ÿåº¦ï¼Œomegaä¸º3*1ç»´çš„åˆ—å‘é‡
     measurements{state_k}.omega = w_vk_vk_i(:,state_k);             % ang vel
-    %vÎªstate_kÖ¡µÄËùÓĞÏßËÙ¶È£¬vÎª3*1Î¬µÄÁĞÏòÁ¿
+    %vä¸ºstate_kå¸§çš„æ‰€æœ‰çº¿é€Ÿåº¦ï¼Œvä¸º3*1ç»´çš„åˆ—å‘é‡
     measurements{state_k}.v     = v_vk_vk_i(:,state_k);             % lin vel
     
     %Idealize measurements
-    %ÅĞ¶Ïstate_kÖ¡µÄËùÓĞÌØÕ÷µãÊÇ·ñÓĞĞ§£¬ÓĞĞ§Îª1£¬ÎŞĞ§Îª0
+    %åˆ¤æ–­state_kå¸§çš„æ‰€æœ‰ç‰¹å¾ç‚¹æ˜¯å¦æœ‰æ•ˆï¼Œæœ‰æ•ˆä¸º1ï¼Œæ— æ•ˆä¸º0
     validMeas = ~isnan(measurements{state_k}.y(1,:));
-    %½«¸ÃÖ¡ËùÓĞÓĞĞ§µÄÌØÕ÷µã£¬ÓÉÍ¼Ïñ×ø±êÏµ·´Í¶Ó°µ½Ïà»ú×ø±êÏµ
+    %å°†è¯¥å¸§æ‰€æœ‰æœ‰æ•ˆçš„ç‰¹å¾ç‚¹ï¼Œç”±å›¾åƒåæ ‡ç³»åæŠ•å½±åˆ°ç›¸æœºåæ ‡ç³»
     measurements{state_k}.y(1,validMeas) = (measurements{state_k}.y(1,validMeas) - camera.c_u)/camera.f_u;
     measurements{state_k}.y(2,validMeas) = (measurements{state_k}.y(2,validMeas) - camera.c_v)/camera.f_v;
     
     %Ground Truth
-    %theta_vk_iÊÇ×ËÌ¬½Ç²Î¿¼Öµ£¬globleµ½imu£¬½«×ËÌ¬½Ç×ª»¯ÎªĞı×ª¾ØÕó£¬ÔÙ×ªÎªËÄÔªÊı
+    %theta_vk_iæ˜¯å§¿æ€è§’å‚è€ƒå€¼ï¼Œglobleåˆ°imuï¼Œå°†å§¿æ€è§’è½¬åŒ–ä¸ºæ—‹è½¬çŸ©é˜µï¼Œå†è½¬ä¸ºå››å…ƒæ•°
     q_IG = rotMatToQuat(axisAngleToRotMat(theta_vk_i(:,state_k)));
-    %r_i_vk_iÊÇÎ»ÖÃ²Î¿¼Öµ,globleµ½imu
+    %r_i_vk_iæ˜¯ä½ç½®å‚è€ƒå€¼,globleåˆ°imu
     p_I_G = r_i_vk_i(:,state_k);
     
-    %¶¨Òå²Î¿¼Öµ½á¹¹Ìå£º[imuState:q_IG,p_I_G
+    %å®šä¹‰å‚è€ƒå€¼ç»“æ„ä½“ï¼š[imuState:q_IG,p_I_G
     %                  camState:q_IG,p_I_G]
     groundTruthStates{state_k}.imuState.q_IG = q_IG;
     groundTruthStates{state_k}.imuState.p_I_G = p_I_G;
     
     % Compute camera pose from current IMU pose
-    %µÃµ½globleµ½imuµÄĞı×ª¾ØÕó£¬Ğı×ª¾ØÕóÓÃC±íÊ¾
+    %å¾—åˆ°globleåˆ°imuçš„æ—‹è½¬çŸ©é˜µï¼Œæ—‹è½¬çŸ©é˜µç”¨Cè¡¨ç¤º
     C_IG = quatToRotMat(q_IG);
-    %µÃµ½globleµ½cameraµÄËÄÔªÊı±ä»»
+    %å¾—åˆ°globleåˆ°cameraçš„å››å…ƒæ•°å˜æ¢
     q_CG = quatLeftComp(camera.q_CI) * q_IG;
-    %µÃµ½globleµ½cameraµÄÎ»ÖÃ±ä»»£¬¼´Ïà»úÔÚÊÀ½ç×ø±êÏµÏÂµÄÎ»ÖÃ
+    %å¾—åˆ°globleåˆ°cameraçš„ä½ç½®å˜æ¢ï¼Œå³ç›¸æœºåœ¨ä¸–ç•Œåæ ‡ç³»ä¸‹çš„ä½ç½®
     p_C_G = p_I_G + C_IG' * camera.p_C_I;
     
-    %¶¨Òå²Î¿¼Öµ½á¹¹Ìå£º[imuState:q_IG,p_I_G
+    %å®šä¹‰å‚è€ƒå€¼ç»“æ„ä½“ï¼š[imuState:q_IG,p_I_G
     %                  camState:q_IG,p_I_G]
     groundTruthStates{state_k}.camState.q_CG = q_CG;
     groundTruthStates{state_k}.camState.p_C_G = p_C_G;
@@ -180,7 +180,7 @@ end
 
 
 %Struct used to keep track of features
-%¼ÇÂ¼×·×Ùµ½µÄËùÓĞÌØÕ÷µãÔÚ²»Í¬Ïà»úÖĞµÄ¹Û²âÒÔ¼°ÌØÕ÷IDºÅ 
+%è®°å½•è¿½è¸ªåˆ°çš„æ‰€æœ‰ç‰¹å¾ç‚¹åœ¨ä¸åŒç›¸æœºä¸­çš„è§‚æµ‹ä»¥åŠç‰¹å¾IDå· 
 featureTracks = {};
 trackedFeatureIds = [];
 
@@ -195,20 +195,20 @@ trackedFeatureIds = [];
 %feature observations
 %Use ground truth for the first state
 
-%²½Öè4£º³õÊ¼»¯MSCKF
-%²½Öè4.1£º»ñÈ¡µÚÒ»¸öËÄÔªÊı²Î¿¼Öµ×÷ÎªIMU×´Ì¬µÄ³õÊ¼Öµ
+%æ­¥éª¤4ï¼šåˆå§‹åŒ–MSCKF
+%æ­¥éª¤4.1ï¼šè·å–ç¬¬ä¸€ä¸ªå››å…ƒæ•°å‚è€ƒå€¼ä½œä¸ºIMUçŠ¶æ€çš„åˆå§‹å€¼
 firstImuState.q_IG = rotMatToQuat(axisAngleToRotMat(theta_vk_i(:,kStart)));
-%²½Öè4.2£º»ñÈ¡µÚÒ»¸öÎ»ÖÃ²Î¿¼Öµ×÷ÎªÎ»ÖÃ³õÊ¼Öµ
+%æ­¥éª¤4.2ï¼šè·å–ç¬¬ä¸€ä¸ªä½ç½®å‚è€ƒå€¼ä½œä¸ºä½ç½®åˆå§‹å€¼
 firstImuState.p_I_G = r_i_vk_i(:,kStart);
 % firstImuState.q_IG = [0;0;0;1];
 % firstImuState.q_IG = rotMatToQuat(rotx(90));
 % firstImuState.p_I_G = [0;0;0];
 
-%²½Öè4.3£º³õÊ¼»¯msckfµÄ×´Ì¬£¬Ä¿Ç°Ö»ÓĞIMUµÄ×´Ì¬£¬³õÊ¼»¯¸ú×Ùµ½µÄÌØÕ÷µã£¬µÚÒ»Ö¡ËùÓĞµÄÌØÕ÷µãÈÏÎª¶¼±»¸ú×ÙÉÏ
+%æ­¥éª¤4.3ï¼šåˆå§‹åŒ–msckfçš„çŠ¶æ€ï¼Œç›®å‰åªæœ‰IMUçš„çŠ¶æ€ï¼Œåˆå§‹åŒ–è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹ï¼Œç¬¬ä¸€å¸§æ‰€æœ‰çš„ç‰¹å¾ç‚¹è®¤ä¸ºéƒ½è¢«è·Ÿè¸ªä¸Š
 [msckfState, featureTracks, trackedFeatureIds] = initializeMSCKF(firstImuState, measurements{kStart}, camera, kStart, noiseParams);
-%´ÓMSCKF×´Ì¬ÖĞ¸üĞÂIMUµÄÀúÊ·×´Ì¬£¬ÓÃÏà»úµÄ×´Ì¬¸üĞÂ¶ÔÓ¦Ê±¿ÌimuµÄÎ»×Ë×´Ì¬
+%ä»MSCKFçŠ¶æ€ä¸­æ›´æ–°IMUçš„å†å²çŠ¶æ€ï¼Œç”¨ç›¸æœºçš„çŠ¶æ€æ›´æ–°å¯¹åº”æ—¶åˆ»imuçš„ä½å§¿çŠ¶æ€
 imuStates = updateStateHistory(imuStates, msckfState, camera, kStart);
-%»­Í¼µ÷ÊÔÊ¹ÓÃ
+%ç”»å›¾è°ƒè¯•ä½¿ç”¨
 msckfState_imuOnly{kStart} = msckfState;
 
 %% ============================MAIN LOOP========================== %%
@@ -216,74 +216,74 @@ msckfState_imuOnly{kStart} = msckfState;
 numFeatureTracksResidualized = 0;
 map = [];
 
-%±éÀúËùÓĞÖ¡£¨Ã¿Ò»Ö¡Í¼Ïñ¶ÔÓ¦Ò»¸öimuÊı¾İ£©
+%éå†æ‰€æœ‰å¸§ï¼ˆæ¯ä¸€å¸§å›¾åƒå¯¹åº”ä¸€ä¸ªimuæ•°æ®ï¼‰
 for state_k = kStart:(kEnd-1)
     fprintf('state_k = %4d\n', state_k);
     
     %% ==========================STATE PROPAGATION======================== %%
-    %Ã²ËÆÄ¬ÈÏIMUºÍCameraÍ¬²½¸üĞÂ
+    %è²Œä¼¼é»˜è®¤IMUå’ŒCameraåŒæ­¥æ›´æ–°
     %Propagate state and covariance
-    %²½Öè5£ºmsckfÔ¤²â¸üĞÂ£¬¸üĞÂ×´Ì¬Á¿£¬¸üĞÂĞ­·½²î¾ØÕó
+    %æ­¥éª¤5ï¼šmsckfé¢„æµ‹æ›´æ–°ï¼Œæ›´æ–°çŠ¶æ€é‡ï¼Œæ›´æ–°åæ–¹å·®çŸ©é˜µ
     msckfState = propagateMsckfStateAndCovar(msckfState, measurements{state_k}, noiseParams);
-    %msckfÔ¤²â¸üĞÂ£¬¸üĞÂ×´Ì¬Á¿£¬¸üĞÂĞ­·½²î¾ØÕó£¬µ«ÊÇmsckfState_imuOnly×´Ì¬Á¿ÖĞÖ»ÓĞIMUµÄ×´Ì¬£¨ÓÃÓÚ¶Ô±È²âÊÔ£©
+    %msckfé¢„æµ‹æ›´æ–°ï¼Œæ›´æ–°çŠ¶æ€é‡ï¼Œæ›´æ–°åæ–¹å·®çŸ©é˜µï¼Œä½†æ˜¯msckfState_imuOnlyçŠ¶æ€é‡ä¸­åªæœ‰IMUçš„çŠ¶æ€ï¼ˆç”¨äºå¯¹æ¯”æµ‹è¯•ï¼‰
     msckfState_imuOnly{state_k+1} = propagateMsckfStateAndCovar(msckfState_imuOnly{state_k}, measurements{state_k}, noiseParams);
     %Add camera pose to msckfState
-    %²½Öè6£ºmsckf×´Ì¬Á¿ÖĞÔö¹ãÏà»úµÄ×´Ì¬£¬Ôö¹ãÑÅ¿Ë±È£¬Ôö¹ãĞ­·½²î¾ØÕó£¬²¢¸üĞÂĞ­·½²î¾ØÕó
+    %æ­¥éª¤6ï¼šmsckfçŠ¶æ€é‡ä¸­å¢å¹¿ç›¸æœºçš„çŠ¶æ€ï¼Œå¢å¹¿é›…å…‹æ¯”ï¼Œå¢å¹¿åæ–¹å·®çŸ©é˜µï¼Œå¹¶æ›´æ–°åæ–¹å·®çŸ©é˜µ
     msckfState = augmentState(msckfState, camera, state_k+1);
     %% ==========================FEATURE TRACKING======================== %%
     % Add observations to the feature tracks, or initialize a new one
     % If an observation is -1, add the track to featureTracksToResidualize
     featureTracksToResidualize = {};
     
-    %²½Öè7£º±éÀúµ±Ç°Ö¡ËùÓĞÌØÕ÷µã£¬¸üĞÂfeatureTracks
-    %ËµÃ÷£ºmsckfÖĞÓÃfeatureTracks¼ÇÂ¼ÁËÄ¿Ç°±»¸ú×Ùµ½µÄÌØÕ÷µã¡£
-    %       featureTracksÖĞ°üº¬Ã¿¸öÌØÕ÷µãIDºÍ¹Û²âÖµ£¨¼´ÔÚËùÓĞÄÜ¹Û²âµ½¸ÃÌØÕ÷µãµÄÏà»ú×ø±êÏµÏÂµÄÆë´Î×ø±ê£©
+    %æ­¥éª¤7ï¼šéå†å½“å‰å¸§æ‰€æœ‰ç‰¹å¾ç‚¹ï¼Œæ›´æ–°featureTracks
+    %è¯´æ˜ï¼šmsckfä¸­ç”¨featureTracksè®°å½•äº†ç›®å‰è¢«è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹ã€‚
+    %       featureTracksä¸­åŒ…å«æ¯ä¸ªç‰¹å¾ç‚¹IDå’Œè§‚æµ‹å€¼ï¼ˆå³åœ¨æ‰€æœ‰èƒ½è§‚æµ‹åˆ°è¯¥ç‰¹å¾ç‚¹çš„ç›¸æœºåæ ‡ç³»ä¸‹çš„é½æ¬¡åæ ‡ï¼‰
            
-    %±éÀú¸ÃÖ¡ËùÓĞµÄÌØÕ÷µã
+    %éå†è¯¥å¸§æ‰€æœ‰çš„ç‰¹å¾ç‚¹
     for featureId = 1:numLandmarks
         %IMPORTANT: state_k + 1 not state_k
-        %È¡Ò»¸öÌØÕ÷µã×ø±ê£¨ÌØÕ÷µãÎªÏà»ú×ø±êÏµ£¬¼´ÒÑ¾­¹ı·´Í¶Ó°×ø±ê£©
+        %å–ä¸€ä¸ªç‰¹å¾ç‚¹åæ ‡ï¼ˆç‰¹å¾ç‚¹ä¸ºç›¸æœºåæ ‡ç³»ï¼Œå³å·²ç»è¿‡åæŠ•å½±åæ ‡ï¼‰
         meas_k = measurements{state_k+1}.y(:, featureId);
         
-        %ÅĞ¶Ï¸ÃÌØÕ÷µãÊÇ·ñÓĞĞ§
+        %åˆ¤æ–­è¯¥ç‰¹å¾ç‚¹æ˜¯å¦æœ‰æ•ˆ
         outOfView = isnan(meas_k(1,1));
         
-        %²½Öè7.1£º±éÀúµ±Ç°Ö¡ËùÓĞÌØÕ÷µã£¬ÅĞ¶ÏÊÇ·ñÊôÓÚfeatureTracks
+        %æ­¥éª¤7.1ï¼šéå†å½“å‰å¸§æ‰€æœ‰ç‰¹å¾ç‚¹ï¼Œåˆ¤æ–­æ˜¯å¦å±äºfeatureTracks
         if ismember(featureId, trackedFeatureIds)
 
-            %²½Öè7.2£ºÈç¹û¸ÃÌØÕ÷µãÔÚÊÓÒ°·¶Î§ÄÚ£º½«ÌØÕ÷µãÔÚÏà»ú×ø±êÏµÏÂµÄÆë´Î×ø±êÌí¼Óµ½featureTracksÖĞ¶ÔÓ¦ÌØÕ÷µÄ¹Û²âÖĞ¡£
+            %æ­¥éª¤7.2ï¼šå¦‚æœè¯¥ç‰¹å¾ç‚¹åœ¨è§†é‡èŒƒå›´å†…ï¼šå°†ç‰¹å¾ç‚¹åœ¨ç›¸æœºåæ ‡ç³»ä¸‹çš„é½æ¬¡åæ ‡æ·»åŠ åˆ°featureTracksä¸­å¯¹åº”ç‰¹å¾çš„è§‚æµ‹ä¸­ã€‚
             if ~outOfView
                 %Append observation and append id to cam states
-                %½«¸ÃÌØÕ÷µãÒÔ¼°IDºÅÌí¼Óµ½featureTracks
-                %trackedFeatureIds¼ÇÂ¼ÁË¸ú×Ùµ½µÄÌØÕ÷µãID£¬featureTracks¼ÇÂ¼ÁË¸ú×Ùµ½µÄÌØÕ÷µã×ø±ê
+                %å°†è¯¥ç‰¹å¾ç‚¹ä»¥åŠIDå·æ·»åŠ åˆ°featureTracks
+                %trackedFeatureIdsè®°å½•äº†è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹IDï¼ŒfeatureTracksè®°å½•äº†è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹åæ ‡
                 featureTracks{trackedFeatureIds == featureId}.observations(:, end+1) = meas_k;
                 
                 %Add observation to current camera
-                %½«¸ú×Ùµ½µÄÌØÕ÷µãIDºÅÌí¼Óµ½Ïà»ú×´Ì¬µÄÊôĞÔtrackedFeatureIdsÖĞ
-                %£¨Ïà»ú×´Ì¬Ö»°üº¬Î»ÖÃºÍËÄÔªÊı£¬µ«ÊÇÍ¬Ñù»á¼ÇÂ¼¸ú×Ùµ½µÄÌØÕ÷µãÕâ¸öÊôĞÔ£©
+                %å°†è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹IDå·æ·»åŠ åˆ°ç›¸æœºçŠ¶æ€çš„å±æ€§trackedFeatureIdsä¸­
+                %ï¼ˆç›¸æœºçŠ¶æ€åªåŒ…å«ä½ç½®å’Œå››å…ƒæ•°ï¼Œä½†æ˜¯åŒæ ·ä¼šè®°å½•è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹è¿™ä¸ªå±æ€§ï¼‰
                 msckfState.camStates{end}.trackedFeatureIds(end+1) = featureId;
             end
             
-            %²½Öè7.3£ºÈç¹û¸ÃÌØÕ÷µã³¬³öÊÓÒ°·¶Î§»òÕßÄÜ¹»¹Û²âµ½¸ÃÌØÕ÷µÄÏà»úÊıÄ¿´óÓÚÉÏÏŞÖµ
-            %È¡³ö¸ÃÌØÕ÷µãÔª£¨ÌØÕ÷µã+ÌØÕ÷µãID+¸ú×Ùµ½¸ÃÌØÕ÷µãµÄÏà»ú×´Ì¬£©
+            %æ­¥éª¤7.3ï¼šå¦‚æœè¯¥ç‰¹å¾ç‚¹è¶…å‡ºè§†é‡èŒƒå›´æˆ–è€…èƒ½å¤Ÿè§‚æµ‹åˆ°è¯¥ç‰¹å¾çš„ç›¸æœºæ•°ç›®å¤§äºä¸Šé™å€¼
+            %å–å‡ºè¯¥ç‰¹å¾ç‚¹å…ƒï¼ˆç‰¹å¾ç‚¹+ç‰¹å¾ç‚¹ID+è·Ÿè¸ªåˆ°è¯¥ç‰¹å¾ç‚¹çš„ç›¸æœºçŠ¶æ€ï¼‰
             track = featureTracks{trackedFeatureIds == featureId};
             
-            %Èç¹ûÌØÕ÷²»ÔÚÊÓÒ°·¶Î§ÄÚ»òÕßÌØÕ÷µãµÄ¹Û²âÊı´óÓÚÉè¶¨µÄÉÏÏŞÖµ£¬ÔòÅĞ¶Ï¸ÃÌØÕ÷µãÊÇ·ñ×ã¹»ºÃ
-            %Ôò½«¹Û²âµ½¸ÃÌØÕ÷µãµÄÏà»úÈ¡³ö½øĞĞÓÅ»¯
+            %å¦‚æœç‰¹å¾ä¸åœ¨è§†é‡èŒƒå›´å†…æˆ–è€…ç‰¹å¾ç‚¹çš„è§‚æµ‹æ•°å¤§äºè®¾å®šçš„ä¸Šé™å€¼ï¼Œåˆ™åˆ¤æ–­è¯¥ç‰¹å¾ç‚¹æ˜¯å¦è¶³å¤Ÿå¥½
+            %åˆ™å°†è§‚æµ‹åˆ°è¯¥ç‰¹å¾ç‚¹çš„ç›¸æœºå–å‡ºè¿›è¡Œä¼˜åŒ–
             if outOfView ...
                     || size(track.observations, 2) >= msckfParams.maxTrackLength ...
                     || state_k+1 == kEnd
                                 
                 %Feature is not in view, remove from the tracked features
-                %´ÓËùÓĞÏà»ú×´Ì¬ÖĞÌŞ³ı¸ÃÌØÕ÷µã£¬²¢½«Éæ¼°µ½µÄÏà»ú×´Ì¬Ìí¼Óµ½×´Ì¬´ıÓÅ»¯ÁĞ±íÖĞ
-                %updatedMsckfState£º×´Ì¬´ıÓÅ»¯ÁĞ±í£¨msckf×´Ì¬£©
-                %featCamStates£º´ıÓÅ»¯µÄÏà»ú×´Ì¬£¨¸ÃÏà»ú¹Û²âµÄÌØÕ÷µã³¬³öÊÓÒ°»ò³¤ÆÚ±»¹Û²âµ½£©
-                %camStateIndices£º´ıÓÅ»¯µÄÏà»úË÷Òı
+                %ä»æ‰€æœ‰ç›¸æœºçŠ¶æ€ä¸­å‰”é™¤è¯¥ç‰¹å¾ç‚¹ï¼Œå¹¶å°†æ¶‰åŠåˆ°çš„ç›¸æœºçŠ¶æ€æ·»åŠ åˆ°çŠ¶æ€å¾…ä¼˜åŒ–åˆ—è¡¨ä¸­
+                %updatedMsckfStateï¼šçŠ¶æ€å¾…ä¼˜åŒ–åˆ—è¡¨ï¼ˆmsckfçŠ¶æ€ï¼‰
+                %featCamStatesï¼šå¾…ä¼˜åŒ–çš„ç›¸æœºçŠ¶æ€ï¼ˆè¯¥ç›¸æœºè§‚æµ‹çš„ç‰¹å¾ç‚¹è¶…å‡ºè§†é‡æˆ–é•¿æœŸè¢«è§‚æµ‹åˆ°ï¼‰
+                %camStateIndicesï¼šå¾…ä¼˜åŒ–çš„ç›¸æœºç´¢å¼•
                 [msckfState, camStates, camStateIndices] = removeTrackedFeature(msckfState, featureId);
                 
                 %Add the track, with all of its camStates, to the
                 %residualized list
-                %´ıÓÅ»¯µÄÏà»ú×´Ì¬³¬¹ı×îĞ¡¸ú×Ù³¤¶È£¨10£©£¬Ôò½«ÆäÌí¼Óµ½ÁĞ±íÖĞÓÃÓÚÓÅ»¯£¨featureTracksToResidualize£©
+                %å¾…ä¼˜åŒ–çš„ç›¸æœºçŠ¶æ€è¶…è¿‡æœ€å°è·Ÿè¸ªé•¿åº¦ï¼ˆ10ï¼‰ï¼Œåˆ™å°†å…¶æ·»åŠ åˆ°åˆ—è¡¨ä¸­ç”¨äºä¼˜åŒ–ï¼ˆfeatureTracksToResidualizeï¼‰
                 if length(camStates) >= msckfParams.minTrackLength
                     track.camStates = camStates;
                     track.camStateIndices = camStateIndices;
@@ -291,14 +291,14 @@ for state_k = kStart:(kEnd-1)
                 end
                
                 %Remove the track
-                %ÈôÒÑÊ¹ÓÃÍê¸øÌØÕ÷£¬Ôò´ÓfeatureTracksÖĞÌŞ³ı¸ÃÌØÕ÷µã
+                %è‹¥å·²ä½¿ç”¨å®Œç»™ç‰¹å¾ï¼Œåˆ™ä»featureTracksä¸­å‰”é™¤è¯¥ç‰¹å¾ç‚¹
                 featureTracks = featureTracks(trackedFeatureIds ~= featureId);
-                %ÈôÒÑÊ¹ÓÃÍê¸øÌØÕ÷£¬Ôò´ÓtrackedFeatureIdsÖĞÌŞ³ı¸ÃÌØÕ÷µãID
+                %è‹¥å·²ä½¿ç”¨å®Œç»™ç‰¹å¾ï¼Œåˆ™ä»trackedFeatureIdsä¸­å‰”é™¤è¯¥ç‰¹å¾ç‚¹ID
                 trackedFeatureIds(trackedFeatureIds == featureId) = []; 
             end
         
-        %²½Öè7.4£º¸ú×Ùµ½ĞÂµÄÌØÕ÷µã£¨¸ÃÌØÕ÷µãÖ®Ç°Ã»ÓĞ±»¸ú×Ùµ½£¬²¢ÇÒÔÚÊÓÒ°·¶Î§ÄÚ£©£¬½«¸ÃÌØÕ÷µãÌí¼Óµ½¸ú×ÙÌØÕ÷µãÁĞ±í
-        %Í¬Ê±£¬¹Û²âµ½¸ÃÌØÕ÷µãµÄÏà»ú¼ÇÂ¼¸ÃÌØÕ÷µãÒÑ±»¸ú×Ùµ½£¨Ìí¼Óµ½Ïà»ú×´Ì¬ÖĞ£©
+        %æ­¥éª¤7.4ï¼šè·Ÿè¸ªåˆ°æ–°çš„ç‰¹å¾ç‚¹ï¼ˆè¯¥ç‰¹å¾ç‚¹ä¹‹å‰æ²¡æœ‰è¢«è·Ÿè¸ªåˆ°ï¼Œå¹¶ä¸”åœ¨è§†é‡èŒƒå›´å†…ï¼‰ï¼Œå°†è¯¥ç‰¹å¾ç‚¹æ·»åŠ åˆ°è·Ÿè¸ªç‰¹å¾ç‚¹åˆ—è¡¨
+        %åŒæ—¶ï¼Œè§‚æµ‹åˆ°è¯¥ç‰¹å¾ç‚¹çš„ç›¸æœºè®°å½•è¯¥ç‰¹å¾ç‚¹å·²è¢«è·Ÿè¸ªåˆ°ï¼ˆæ·»åŠ åˆ°ç›¸æœºçŠ¶æ€ä¸­ï¼‰
         elseif ~outOfView && state_k+1 < kEnd % && ~ismember(featureId, trackedFeatureIds)
             %Track new feature
             track.featureId = featureId;
@@ -311,58 +311,58 @@ for state_k = kStart:(kEnd-1)
         end
     end
      
-    %²½Öè8£ºMSCKF²âÁ¿¸üĞÂ¡£±éÀúËùÓĞÓÃÓÚÓÅ»¯µÄÌØÕ÷µã,¹¹Ôì¹Û²âÄ£ĞÍ£¨ÌØÕ÷µãÖØÍ¶Ó°Îó²î£©£¬¸üĞÂMSCKF×´Ì¬
+    %æ­¥éª¤8ï¼šMSCKFæµ‹é‡æ›´æ–°ã€‚éå†æ‰€æœ‰ç”¨äºä¼˜åŒ–çš„ç‰¹å¾ç‚¹,æ„é€ è§‚æµ‹æ¨¡å‹ï¼ˆç‰¹å¾ç‚¹é‡æŠ•å½±è¯¯å·®ï¼‰ï¼Œæ›´æ–°MSCKFçŠ¶æ€
     %% ==========================FEATURE RESIDUAL CORRECTIONS======================== %%
-    %Èç¹ûÓÃÓÚÓÅ»¯µÄÌØÕ÷µã£¨¼ÇÂ¼ÁËÄÜ¹Û²âµ½ÕâĞ©ÌØÕ÷µãµÄÏà»ú£©²»Îª¿Õ
+    %å¦‚æœç”¨äºä¼˜åŒ–çš„ç‰¹å¾ç‚¹ï¼ˆè®°å½•äº†èƒ½è§‚æµ‹åˆ°è¿™äº›ç‰¹å¾ç‚¹çš„ç›¸æœºï¼‰ä¸ä¸ºç©º
     if ~isempty(featureTracksToResidualize)
         H_o = [];
         r_o = [];
         R_o = [];
-        %²½Öè8.1£ºÍ¨¹ıÌØÕ÷µãËùÓĞ¹Û²â¹À¼Æ³ö¸ÃÌØÕ÷µãµÄ3D¿Õ¼ä×ø±êÎ»ÖÃ
-        %±éÀúËùÓĞÓÃÓÚÓÅ»¯µÄÌØÕ÷µã
+        %æ­¥éª¤8.1ï¼šé€šè¿‡ç‰¹å¾ç‚¹æ‰€æœ‰è§‚æµ‹ä¼°è®¡å‡ºè¯¥ç‰¹å¾ç‚¹çš„3Dç©ºé—´åæ ‡ä½ç½®
+        %éå†æ‰€æœ‰ç”¨äºä¼˜åŒ–çš„ç‰¹å¾ç‚¹
         for f_i = 1:length(featureTracksToResidualize)
-            %È¡³öÆäÖĞÒ»¸öÌØÕ÷µãÔª(¸ÃÌØÕ÷¶ÔÓ¦µÄËùÓĞ¹Û²â)
+            %å–å‡ºå…¶ä¸­ä¸€ä¸ªç‰¹å¾ç‚¹å…ƒ(è¯¥ç‰¹å¾å¯¹åº”çš„æ‰€æœ‰è§‚æµ‹)
             track = featureTracksToResidualize{f_i};     
             %Estimate feature 3D location through Gauss Newton inverse depth
             %optimization
-            %Ê¹ÓÃÄæÉî¶È²ÎÊı¹¹ÔìÖØÍ¶Ó°Îó²îº¯Êı£¬ÓÃ¸ßË¹Å£¶ÙÓÅ»¯µÄ·½·¨¹À¼ÆÌØÕ÷µã3D×ø±êp_f_G
+            %ä½¿ç”¨é€†æ·±åº¦å‚æ•°æ„é€ é‡æŠ•å½±è¯¯å·®å‡½æ•°ï¼Œç”¨é«˜æ–¯ç‰›é¡¿ä¼˜åŒ–çš„æ–¹æ³•ä¼°è®¡ç‰¹å¾ç‚¹3Dåæ ‡p_f_G
             [p_f_G, Jcost, RCOND] = calcGNPosEst(track.camStates, track.observations, noiseParams);
             % Uncomment to use ground truth map instead
 %              p_f_G = groundTruthMap(:, track.featureId); Jcost = 0; RCOND = 1;
 %              p_f_C = triangulate(squeeze(y_k_j(:, track.camStates{1}.state_k, track.featureId)), camera); Jcost = 0; RCOND = 1;
-            %»ñÈ¡¸ú×Ùµ½¸ÃÌØÕ÷µãµÄÏà»ú¸öÊı
+            %è·å–è·Ÿè¸ªåˆ°è¯¥ç‰¹å¾ç‚¹çš„ç›¸æœºä¸ªæ•°
             nObs = size(track.observations,2);
-            %¼ÆËãËùÓĞÖØÍ¶Ó°Îó²îÆ½¾ùµ½Ã¿¸öÏà»úµÄÍ¶Ó°Îó²î
+            %è®¡ç®—æ‰€æœ‰é‡æŠ•å½±è¯¯å·®å¹³å‡åˆ°æ¯ä¸ªç›¸æœºçš„æŠ•å½±è¯¯å·®
             JcostNorm = Jcost / nObs^2;
             fprintf('Jcost = %f | JcostNorm = %f | RCOND = %f\n',...
                 Jcost, JcostNorm,RCOND);
             
-            %Í¶Ó°Îó²îÌ«´ó£¬»òÕßµü´úÊ±Hessian¾ØÕóÇóÄæ²»¿É¿¿
+            %æŠ•å½±è¯¯å·®å¤ªå¤§ï¼Œæˆ–è€…è¿­ä»£æ—¶HessiançŸ©é˜µæ±‚é€†ä¸å¯é 
             if JcostNorm > msckfParams.maxGNCostNorm ...
                     || RCOND < msckfParams.minRCOND
 %                     || norm(p_f_G) > 50
                 
                 break;
             else
-                %½«3Dµã¼ÓÈëµ½µØÍ¼
+                %å°†3Dç‚¹åŠ å…¥åˆ°åœ°å›¾
                 map(:,end+1) = p_f_G;
                 numFeatureTracksResidualized = numFeatureTracksResidualized + 1;
                 fprintf('Using new feature track with %d observations. Total track count = %d.\n',...
                     nObs, numFeatureTracksResidualized);
             end
-            %²½Öè8.2£ºÍ¨¹ıÌØÕ÷3D×ø±êÓëÏà»úÆ¥ÅäÌØÕ÷µãÖ®¼äµÄÖØÍ¶Ó°²Ğ²î¹¹Ôì¹Û²âÄ£ĞÍ£¬°üÀ¨ÖØÍ¶Ó°Îó²î¶ÔMSCKF×´Ì¬Á¿µÄÑÅ¿Ë±È¾ØÕóµÄÇó½â 
+            %æ­¥éª¤8.2ï¼šé€šè¿‡ç‰¹å¾3Dåæ ‡ä¸ç›¸æœºåŒ¹é…ç‰¹å¾ç‚¹ä¹‹é—´çš„é‡æŠ•å½±æ®‹å·®æ„é€ è§‚æµ‹æ¨¡å‹ï¼ŒåŒ…æ‹¬é‡æŠ•å½±è¯¯å·®å¯¹MSCKFçŠ¶æ€é‡çš„é›…å…‹æ¯”çŸ©é˜µçš„æ±‚è§£ 
             %Calculate residual and Hoj
-            %¼ÆËãÓÅ»¯ºóÌØÕ÷3D×ø±êÓëÏà»úÆ¥ÅäÌØÕ÷µãÖ®¼äµÄÖØÍ¶Ó°²Ğ²î
+            %è®¡ç®—ä¼˜åŒ–åç‰¹å¾3Dåæ ‡ä¸ç›¸æœºåŒ¹é…ç‰¹å¾ç‚¹ä¹‹é—´çš„é‡æŠ•å½±æ®‹å·®
             [r_j] = calcResidual(p_f_G, track.camStates, track.observations);
-            %¹¹ÔìÖØÍ¶Ó°²Ğ²îµÄÔëÉùÏòÁ¿£¨2*camState,2*camState£©´óĞ¡¾ØÕó
+            %æ„é€ é‡æŠ•å½±æ®‹å·®çš„å™ªå£°å‘é‡ï¼ˆ2*camState,2*camStateï¼‰å¤§å°çŸ©é˜µ
             R_j = diag(repmat([noiseParams.u_var_prime, noiseParams.v_var_prime], [1, numel(r_j)/2]));
-            %¼ÆËãÖØÍ¶Ó°Îó²î¶ÔMSCKF×´Ì¬Á¿µÄÑÅ¿Ë±È¾ØÕó£¨MSCKF¹Û²âÄ£ĞÍ£©
+            %è®¡ç®—é‡æŠ•å½±è¯¯å·®å¯¹MSCKFçŠ¶æ€é‡çš„é›…å…‹æ¯”çŸ©é˜µï¼ˆMSCKFè§‚æµ‹æ¨¡å‹ï¼‰
             [H_o_j, A_j, H_x_j] = calcHoj(p_f_G, msckfState, track.camStateIndices);
 
             % Stacked residuals and friends
-            %ÅĞ¶ÏÊÇ·ñÒª¶ÔÖØÍ¶Ó°Îó²îºÍÔëÉù×ó³ËH_f_jµÄÁã¿Õ¼ä±ä»»¾ØÕó£¬Ïê¼ûcalcHojº¯Êı×îºó²¿·Ö
+            %åˆ¤æ–­æ˜¯å¦è¦å¯¹é‡æŠ•å½±è¯¯å·®å’Œå™ªå£°å·¦ä¹˜H_f_jçš„é›¶ç©ºé—´å˜æ¢çŸ©é˜µï¼Œè¯¦è§calcHojå‡½æ•°æœ€åéƒ¨åˆ†
             if msckfParams.doNullSpaceTrick
-                %Ôö¹ãH¾ØÕó
+                %å¢å¹¿HçŸ©é˜µ
                 H_o = [H_o; H_o_j];
 
                 if ~isempty(A_j)
@@ -383,9 +383,9 @@ for state_k = kStart:(kEnd-1)
         if ~isempty(r_o)
             % Put residuals into their final update-worthy form
             if msckfParams.doQRdecomp
-                %QR·Ö½âH_o¾ØÕó£¬²¢ÇÒÌŞ³ıQÖĞµÄÁãĞĞ£¬ÒÔ¼°RÖĞ¶ÔÓ¦µÄÁĞ
+                %QRåˆ†è§£H_oçŸ©é˜µï¼Œå¹¶ä¸”å‰”é™¤Qä¸­çš„é›¶è¡Œï¼Œä»¥åŠRä¸­å¯¹åº”çš„åˆ—
                 [T_H, Q_1] = calcTH(H_o);
-                %error = H * x + n  (¹Û²âÄ£ĞÍ£¬nÎªÔëÉùĞ­·½²î)
+                %error = H * x + n  (è§‚æµ‹æ¨¡å‹ï¼Œnä¸ºå™ªå£°åæ–¹å·®)
                 %      = Q_1 * T_H * x + n
                 %==> Q_1' * error = Q_1' * Q_1 * T_H * x + Q_1' * n * Q_1
                 %                 = T_H * x + Q_1' * n * Q_1
@@ -396,7 +396,7 @@ for state_k = kStart:(kEnd-1)
                 r_n = r_o;
                 R_n = R_o;
             end           
-            %²½Öè8.3£º¼ÆËã¿¨¶ûÂüÔöÒæ£¬¸üĞÂÎó²î×´Ì¬
+            %æ­¥éª¤8.3ï¼šè®¡ç®—å¡å°”æ›¼å¢ç›Šï¼Œæ›´æ–°è¯¯å·®çŠ¶æ€
             % Build MSCKF covariance matrix
             P = [msckfState.imuCovar, msckfState.imuCamCovar;
                    msckfState.imuCamCovar', msckfState.camCovar];
@@ -406,11 +406,11 @@ for state_k = kStart:(kEnd-1)
 
             % State correction
             deltaX = K * r_n;
-            %²½Öè8.4£º¸ù¾İÎó²î×´Ì¬¸üĞÂMSCKF×´Ì¬£¬x_true := x_nominal + detx
+            %æ­¥éª¤8.4ï¼šæ ¹æ®è¯¯å·®çŠ¶æ€æ›´æ–°MSCKFçŠ¶æ€ï¼Œx_true := x_nominal + detx
             msckfState = updateState(msckfState, deltaX);
 
             % Covariance correction
-            %²½Öè8.5£ºĞ­·½²î²âÁ¿¸üĞÂ
+            %æ­¥éª¤8.5ï¼šåæ–¹å·®æµ‹é‡æ›´æ–°
             tempMat = (eye(12 + 6*size(msckfState.camStates,2)) - K*T_H);
 %             tempMat = (eye(12 + 6*size(msckfState.camStates,2)) - K*H_o);
 
@@ -428,17 +428,17 @@ for state_k = kStart:(kEnd-1)
     end
     
         %% ==========================STATE HISTORY======================== %%
-        %²½Öè9£ºÀúÊ·×´Ì¬¸üĞÂ¡£´ÓMSCKF×´Ì¬ÖĞ¸üĞÂIMUµÄÀúÊ·×´Ì¬£¬Í¨¹ıÏà»úµÄ×´Ì¬¸üĞÂ¶ÔÓ¦Ê±¿ÌimuµÄÎ»×Ë×´Ì¬
+        %æ­¥éª¤9ï¼šå†å²çŠ¶æ€æ›´æ–°ã€‚ä»MSCKFçŠ¶æ€ä¸­æ›´æ–°IMUçš„å†å²çŠ¶æ€ï¼Œé€šè¿‡ç›¸æœºçš„çŠ¶æ€æ›´æ–°å¯¹åº”æ—¶åˆ»imuçš„ä½å§¿çŠ¶æ€
         imuStates = updateStateHistory(imuStates, msckfState, camera, state_k+1);
         
         
         %% ==========================STATE PRUNING======================== %%
-        %²½Öè10£º×´Ì¬ÌŞ³ı¡£ÌŞ³ıMSCKFÖĞĞèÒª±»É¾³ıµÄ×´Ì¬ºÍ¶ÔÓ¦µÄĞ­·½²î¾ØÕó¿é
+        %æ­¥éª¤10ï¼šçŠ¶æ€å‰”é™¤ã€‚å‰”é™¤MSCKFä¸­éœ€è¦è¢«åˆ é™¤çš„çŠ¶æ€å’Œå¯¹åº”çš„åæ–¹å·®çŸ©é˜µå—
         %Remove any camera states with no tracked features
-        %·Ö±ğµÃµ½MSCKFÖĞĞèÒª±»±£ÁôºÍÉ¾³ıµÄ×´Ì¬ÓëĞ­·½²î
+        %åˆ†åˆ«å¾—åˆ°MSCKFä¸­éœ€è¦è¢«ä¿ç•™å’Œåˆ é™¤çš„çŠ¶æ€ä¸åæ–¹å·®
         [msckfState, deletedCamStates] = pruneStates(msckfState);
 
-        %»æÖÆÉ¾µôµÄÏà»úÎ»ÖÃ
+        %ç»˜åˆ¶åˆ æ‰çš„ç›¸æœºä½ç½®
         if ~isempty(deletedCamStates)
             prunedStates(end+1:end+length(deletedCamStates)) = deletedCamStates;
         end    

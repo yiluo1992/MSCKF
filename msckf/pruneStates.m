@@ -1,11 +1,11 @@
 function [ prunedMsckfState, deletedCamStates ] = pruneStates( msckfState )
-%º¯Êı¹¦ÄÜ£º·Ö±ğµÃµ½MSCKFÖĞĞèÒª±»±£ÁôºÍÉ¾³ıµÄ×´Ì¬ÓëĞ­·½²î
+%å‡½æ•°åŠŸèƒ½ï¼šåˆ†åˆ«å¾—åˆ°MSCKFä¸­éœ€è¦è¢«ä¿ç•™å’Œåˆ é™¤çš„çŠ¶æ€ä¸åæ–¹å·®
 %
-%·µ»ØÖµ£º
-%      prunedMsckfState£ºMSCKFÖĞĞèÒª±»±£ÁôµÄ×´Ì¬ºÍĞ­·½²î
-%      deletedCamStates£ºMSCKFÖĞĞèÒª±»É¾³ıµÄ×´Ì¬ºÍĞ­·½²î
-%ÊäÈëÖµ£º
-%      msckfState£ºmsckfÎ´É¾³ıÇ°×´Ì¬
+%è¿”å›å€¼ï¼š
+%      prunedMsckfStateï¼šMSCKFä¸­éœ€è¦è¢«ä¿ç•™çš„çŠ¶æ€å’Œåæ–¹å·®
+%      deletedCamStatesï¼šMSCKFä¸­éœ€è¦è¢«åˆ é™¤çš„çŠ¶æ€å’Œåæ–¹å·®
+%è¾“å…¥å€¼ï¼š
+%      msckfStateï¼šmsckfæœªåˆ é™¤å‰çŠ¶æ€
 
 %PRUNESTATES Prunes any states that have no tracked features and updates
 %covariances
@@ -14,7 +14,7 @@ function [ prunedMsckfState, deletedCamStates ] = pruneStates( msckfState )
     prunedMsckfState.imuCovar = msckfState.imuCovar;
     
     %Find all camStates with no tracked landmarks    
-    %ÕÒµ½¸ú×ÙÌØÕ÷ÊıÎª¿ÕµÄÏà»ú×´Ì¬£¬Ìí¼Óµ½É¾³ıÁĞ±ídeleteIdxÖĞ
+    %æ‰¾åˆ°è·Ÿè¸ªç‰¹å¾æ•°ä¸ºç©ºçš„ç›¸æœºçŠ¶æ€ï¼Œæ·»åŠ åˆ°åˆ é™¤åˆ—è¡¨deleteIdxä¸­
     deleteIdx = [];
     for c_i = 1:length(msckfState.camStates)
         if isempty(msckfState.camStates{c_i}.trackedFeatureIds)
@@ -24,39 +24,39 @@ function [ prunedMsckfState, deletedCamStates ] = pruneStates( msckfState )
     
     %Prune the damn states!
     
-    %²½Öè1£ºÉ¾³ımsckfÖĞĞèÒªÉ¾³ıµÄ×´Ì¬
-    %È¡³ömsckfÖĞÒªÉ¾³ıµÄÏà»ú×´Ì¬
+    %æ­¥éª¤1ï¼šåˆ é™¤msckfä¸­éœ€è¦åˆ é™¤çš„çŠ¶æ€
+    %å–å‡ºmsckfä¸­è¦åˆ é™¤çš„ç›¸æœºçŠ¶æ€
     deletedCamStates = msckfState.camStates(deleteIdx);
-    %´ÓmsckfÖĞÉ¾³ıĞèÒªÉ¾³ıµÄÏà»ú×´Ì¬
+    %ä»msckfä¸­åˆ é™¤éœ€è¦åˆ é™¤çš„ç›¸æœºçŠ¶æ€
     prunedMsckfState.camStates = removeCells(msckfState.camStates, deleteIdx);
     
-    %Ğ­·½²î¾ØÕóÖĞÏà»úĞ­·½²îµÄĞĞÊı
+    %åæ–¹å·®çŸ©é˜µä¸­ç›¸æœºåæ–¹å·®çš„è¡Œæ•°
     statesIdx = 1:size(msckfState.camCovar,1);
-    %keepCovarMaskÓÃÓÚ±ê¼ÇÒª±£ÁôµÄĞ­·½²îĞĞ
+    %keepCovarMaskç”¨äºæ ‡è®°è¦ä¿ç•™çš„åæ–¹å·®è¡Œ
     keepCovarMask = true(1, numel(statesIdx));
     for dIdx = deleteIdx
-        %Ğ­·½²îÖĞÒªÉ¾³ıµÄÖÃÎªfalse
+        %åæ–¹å·®ä¸­è¦åˆ é™¤çš„ç½®ä¸ºfalse
         keepCovarMask(6*dIdx - 5:6*dIdx) = false(6,1);
     end
     
-    %¸øĞ­·½²îÏàÓ¦Î»ÖÃ±êÃ÷ÊÇ·ñ±£Áô×´Ì¬£¬±£ÁôÎªtrue£¬É¾³ıÎªfalse
+    %ç»™åæ–¹å·®ç›¸åº”ä½ç½®æ ‡æ˜æ˜¯å¦ä¿ç•™çŠ¶æ€ï¼Œä¿ç•™ä¸ºtrueï¼Œåˆ é™¤ä¸ºfalse
     keepCovarIdx = statesIdx(keepCovarMask);
     deleteCovarIdx = statesIdx(~keepCovarMask);
 
-    %²½Öè2£ºÉ¾³ımsckfÖĞĞèÒªÉ¾³ıµÄĞ­·½²î
-    %µÃµ½ĞèÒª±»±£ÁôµÄĞ­·½²î£¬IMU-IMUĞ­·½²îÈ«²¿±£Áô
-    %µÃµ½camera-cameraĞ­·½²î¾ØÕó¿éÖĞĞèÒª±»±£ÁôµÄ²¿·Ö
+    %æ­¥éª¤2ï¼šåˆ é™¤msckfä¸­éœ€è¦åˆ é™¤çš„åæ–¹å·®
+    %å¾—åˆ°éœ€è¦è¢«ä¿ç•™çš„åæ–¹å·®ï¼ŒIMU-IMUåæ–¹å·®å…¨éƒ¨ä¿ç•™
+    %å¾—åˆ°camera-cameraåæ–¹å·®çŸ©é˜µå—ä¸­éœ€è¦è¢«ä¿ç•™çš„éƒ¨åˆ†
     prunedMsckfState.camCovar = msckfState.camCovar(keepCovarIdx, keepCovarIdx);
     %Keep rows, prune columns of upper right covariance matrix
-    %µÃµ½imu-cameraĞ­·À²î¾ØÕó¿éÖĞĞèÒª±»±£ÁôµÄ²¿·Ö
+    %å¾—åˆ°imu-cameraåé˜²å·®çŸ©é˜µå—ä¸­éœ€è¦è¢«ä¿ç•™çš„éƒ¨åˆ†
     prunedMsckfState.imuCamCovar = msckfState.imuCamCovar(:, keepCovarIdx);
-    %µÃµ½camera-cameraĞ­·½²î¾ØÕó¿éÖĞÒªÉ¾³ıµÄ²¿·Ö
+    %å¾—åˆ°camera-cameraåæ–¹å·®çŸ©é˜µå—ä¸­è¦åˆ é™¤çš„éƒ¨åˆ†
     deletedCamCovar = msckfState.camCovar(deleteCovarIdx, deleteCovarIdx);
-    %µÃµ½ÒªÉ¾³ıµÄcamera-cameraĞ­·½²î¶Ô½ÇÏßµÄÔªËØ¾ù·½¸ùdeletedCamSigma
+    %å¾—åˆ°è¦åˆ é™¤çš„camera-cameraåæ–¹å·®å¯¹è§’çº¿çš„å…ƒç´ å‡æ–¹æ ¹deletedCamSigma
     deletedCamSigma = sqrt(diag(deletedCamCovar));
     
     % Grab the variances of the deleted states for plotting
-    %µÃµ½ÒªÉ¾³ıµÄÏà»ú×´Ì¬¶ÔÓ¦µÄĞ­·½²î¾ØÕó¶Ô½ÇÏßÔªËØµÄ¾ù·½¸ù£¨»­Í¼ÓÃ£©
+    %å¾—åˆ°è¦åˆ é™¤çš„ç›¸æœºçŠ¶æ€å¯¹åº”çš„åæ–¹å·®çŸ©é˜µå¯¹è§’çº¿å…ƒç´ çš„å‡æ–¹æ ¹ï¼ˆç”»å›¾ç”¨ï¼‰
     for c_i = 1:size(deletedCamStates, 2)
         deletedCamStates{c_i}.sigma = deletedCamSigma(6*c_i - 5 : 6*c_i);
     end

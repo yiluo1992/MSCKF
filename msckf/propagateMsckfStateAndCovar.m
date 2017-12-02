@@ -1,25 +1,25 @@
 function msckfState_prop = propagateMsckfStateAndCovar(msckfState, measurements_k, noiseParams)
-%º¯Êı¹¦ÄÜ£ºmsckfÔ¤²â¸üĞÂ£¬¸üĞÂ×´Ì¬Á¿£¬¸üĞÂĞ­·½²î¾ØÕó
-%·µ»ØÖµ£º
-%      msckfState_prop£º¸üĞÂºóµÄ×´Ì¬Á¿
-%ÊäÈëÖµ£º
-%      msckfState£º¸üĞÂÇ°µÄ×´Ì¬Á¿
-%      measurements_k£º²âÁ¿Öµ£¨IMU½ÇËÙ¶ÈÓëIMUËÙ¶È£©
-%      noiseParams£ºÔëÉù
+%å‡½æ•°åŠŸèƒ½ï¼šmsckfé¢„æµ‹æ›´æ–°ï¼Œæ›´æ–°çŠ¶æ€é‡ï¼Œæ›´æ–°åæ–¹å·®çŸ©é˜µ
+%è¿”å›å€¼ï¼š
+%      msckfState_propï¼šæ›´æ–°åçš„çŠ¶æ€é‡
+%è¾“å…¥å€¼ï¼š
+%      msckfStateï¼šæ›´æ–°å‰çš„çŠ¶æ€é‡
+%      measurements_kï¼šæµ‹é‡å€¼ï¼ˆIMUè§’é€Ÿåº¦ä¸IMUé€Ÿåº¦ï¼‰
+%      noiseParamsï¼šå™ªå£°
 
     % Jacobians
     Q_imu = noiseParams.Q_imu;
-    %²½Öè1£ºÎó²î×´Ì¬×ªÒÆ¾ØÕó£¨¶Ô×´Ì¬µÄÇóµ¼£©
+    %æ­¥éª¤1ï¼šè¯¯å·®çŠ¶æ€è½¬ç§»çŸ©é˜µï¼ˆå¯¹çŠ¶æ€çš„æ±‚å¯¼ï¼‰
     F = calcF(msckfState.imuState, measurements_k);
-    %²½Öè2£ºÎó²î×´ÖĞÔëÉù¸üĞÂ¾ØÕó£¨¶ÔÔëÉù²¿·ÖµÄÇóµ¼£©
+    %æ­¥éª¤2ï¼šè¯¯å·®çŠ¶ä¸­å™ªå£°æ›´æ–°çŸ©é˜µï¼ˆå¯¹å™ªå£°éƒ¨åˆ†çš„æ±‚å¯¼ï¼‰
     G = calcG(msckfState.imuState);
 
     %Propagate State
-    %²½Öè3£º¸ù¾İIMU²âÁ¿Öµ¸üĞÂIMUµÄ×´Ì¬£¨ËÄÔªÊı ÍÓÂİÒÇÁãÆ«ÓëËÙ¶ÈÁãÆ« Î»ÖÃ£©
+    %æ­¥éª¤3ï¼šæ ¹æ®IMUæµ‹é‡å€¼æ›´æ–°IMUçš„çŠ¶æ€ï¼ˆå››å…ƒæ•° é™€èºä»ªé›¶åä¸é€Ÿåº¦é›¶å ä½ç½®ï¼‰
     msckfState_prop.imuState = propagateImuState(msckfState.imuState, measurements_k);
 
     % State Transition Matrix
-    %×¢Òâ£¡ ×´Ì¬×ªÒÆĞ­·½²îµÄ¸üĞÂ¾ØÕóÓëÊ±¼äÓĞ¹Ø
+    %æ³¨æ„ï¼ çŠ¶æ€è½¬ç§»åæ–¹å·®çš„æ›´æ–°çŸ©é˜µä¸æ—¶é—´æœ‰å…³
     Phi = eye(size(F,1)) + F * measurements_k.dT; % Leutenegger 2013
     
     % IMU-IMU Covariance
@@ -29,22 +29,22 @@ function msckfState_prop = propagateMsckfStateAndCovar(msckfState, measurements_
 %                                 + G * Q_imu * G' ) ...
 %                                         * measurements_k.dT;
 
-    %²½Öè4£º¸üĞÂĞ­·½²î¾ØÕóÖĞIMU-IMU¿é²¿·Ö
+    %æ­¥éª¤4ï¼šæ›´æ–°åæ–¹å·®çŸ©é˜µä¸­IMU-IMUå—éƒ¨åˆ†
     %imuCover := P * imuCover * P' + G * Q_imu * G'
-    %notation! ÔëÉùĞ­·½²îµÄ¸üĞÂ¾ØÕóÓëÊ±¼äÓĞ¹Ø
+    %notation! å™ªå£°åæ–¹å·®çš„æ›´æ–°çŸ©é˜µä¸æ—¶é—´æœ‰å…³
     msckfState_prop.imuCovar = Phi * msckfState.imuCovar * Phi' ...
                                 + G * Q_imu * G' * measurements_k.dT; % Leutenegger 2013
     
     % Enforce PSD-ness
-    %²½Öè5£ºÇ¿ÖÆĞ­·½²î±äÎª¶Ô³Æ¾ØÕó£ºÖ÷¶Ô½ÇÏßÔªËØÈ¡¾ø¶ÔÖµ£¬·Ç¶Ô½ÇÏßÔªËØ¶Ô³ÆÔªËØÈ¡Æ½¾ùÖµ
+    %æ­¥éª¤5ï¼šå¼ºåˆ¶åæ–¹å·®å˜ä¸ºå¯¹ç§°çŸ©é˜µï¼šä¸»å¯¹è§’çº¿å…ƒç´ å–ç»å¯¹å€¼ï¼Œéå¯¹è§’çº¿å…ƒç´ å¯¹ç§°å…ƒç´ å–å¹³å‡å€¼
     msckfState_prop.imuCovar = enforcePSD(msckfState_prop.imuCovar);
                                     
     % Camera-Camera Covariance
-    %²½Öè6£º¸üĞÂĞ­·½²î¾ØÕóÖĞCamera-Camera¿é²¿·Ö£¬²»±ä
+    %æ­¥éª¤6ï¼šæ›´æ–°åæ–¹å·®çŸ©é˜µä¸­Camera-Cameraå—éƒ¨åˆ†ï¼Œä¸å˜
     msckfState_prop.camCovar = msckfState.camCovar;
     
     % IMU-Camera Covariance
-    %²½Öè7£º¸üĞÂĞ­·½²î¾ØÕóÖĞIMU-Camera¿é²¿·Ö
+    %æ­¥éª¤7ï¼šæ›´æ–°åæ–¹å·®çŸ©é˜µä¸­IMU-Cameraå—éƒ¨åˆ†
     %imuCamCovar := P * imuCamCovar
     msckfState_prop.imuCamCovar = Phi * msckfState.imuCamCovar;
     msckfState_prop.camStates = msckfState.camStates;

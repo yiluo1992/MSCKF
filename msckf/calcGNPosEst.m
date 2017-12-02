@@ -1,14 +1,14 @@
 function [p_f_G, Jnew, RCOND] = calcGNPosEst(camStates, observations, noiseParams)
-%º¯Êı¹¦ÄÜ£ºÊ¹ÓÃÄæÉî¶È²ÎÊı¹¹ÔìÖØÍ¶Ó°Îó²îº¯Êı£¬ÓÃ¸ßË¹Å£¶ÙÓÅ»¯µÄ·½·¨¹À¼ÆÌØÕ÷µã3D×ø±ê
+%å‡½æ•°åŠŸèƒ½ï¼šä½¿ç”¨é€†æ·±åº¦å‚æ•°æ„é€ é‡æŠ•å½±è¯¯å·®å‡½æ•°ï¼Œç”¨é«˜æ–¯ç‰›é¡¿ä¼˜åŒ–çš„æ–¹æ³•ä¼°è®¡ç‰¹å¾ç‚¹3Dåæ ‡
 %
-%·µ»ØÖµ£º
-%      p_f_G£ºglobal×ø±êÏµÏÂ3x1ÌØÕ÷ÏòÁ¿
-%      Jnew£ºchi2Ö¸±ê£¬±íÊ¾²Ğ²î´óĞ¡
-%      RCOND£º¹ÀËã1-Ìõ¼şÊıµÄµ¹Êı
-%ÊäÈëÖµ£º
-%      camStates£ºM¸öÏà»ú×´Ì¬
-%      observations£ºµ±Ç°Â·±êµãµÄ2XMÏñËØ×ø±ê¾ØÕó
-%      noiseParams£º Í¼ÏñÏñËØÎó²î
+%è¿”å›å€¼ï¼š
+%      p_f_Gï¼šglobalåæ ‡ç³»ä¸‹3x1ç‰¹å¾å‘é‡
+%      Jnewï¼šchi2æŒ‡æ ‡ï¼Œè¡¨ç¤ºæ®‹å·®å¤§å°
+%      RCONDï¼šä¼°ç®—1-æ¡ä»¶æ•°çš„å€’æ•°
+%è¾“å…¥å€¼ï¼š
+%      camStatesï¼šMä¸ªç›¸æœºçŠ¶æ€
+%      observationsï¼šå½“å‰è·¯æ ‡ç‚¹çš„2XMåƒç´ åæ ‡çŸ©é˜µ
+%      noiseParamsï¼š å›¾åƒåƒç´ è¯¯å·®
 
 %CALCGNPOSEST Calculate the position estimate of the feature using Gauss
 %Newton optimization
@@ -26,45 +26,45 @@ function [p_f_G, Jnew, RCOND] = calcGNPosEst(camStates, observations, noiseParam
 
 %Get initial estimate through intersection
 %Use the first 2 camStates
-%Ñ¡ÔñµÚÒ»Ö¡Ïà»ú£¨camStates{1}£©ºÍ×îºóÒ»Ö¡Ïà»ú£¨camStates{secondViewIdx}£©µÄÌØÕ÷µãÈı½Ç»¯»Ö¸´3Dµã
-%»ñÈ¡Ïà»ú×´Ì¬³¤¶È
+%é€‰æ‹©ç¬¬ä¸€å¸§ç›¸æœºï¼ˆcamStates{1}ï¼‰å’Œæœ€åä¸€å¸§ç›¸æœºï¼ˆcamStates{secondViewIdx}ï¼‰çš„ç‰¹å¾ç‚¹ä¸‰è§’åŒ–æ¢å¤3Dç‚¹
+%è·å–ç›¸æœºçŠ¶æ€é•¿åº¦
 secondViewIdx = length(camStates);
-%»ñµÃµÚÒ»Ö¡Ïà»úÓë×îºóÒ»Ö¡Ö®¼äµÄÎ»×Ë£¨2µ½1£©
+%è·å¾—ç¬¬ä¸€å¸§ç›¸æœºä¸æœ€åä¸€å¸§ä¹‹é—´çš„ä½å§¿ï¼ˆ2åˆ°1ï¼‰
 C_12 = quatToRotMat(camStates{1}.q_CG)*quatToRotMat(camStates{secondViewIdx}.q_CG)';
 t_21_1 = quatToRotMat(camStates{1}.q_CG)*(camStates{secondViewIdx}.p_C_G - camStates{1}.p_C_G);
-%Èı½Ç»¯»Ö¸´3Dµã
+%ä¸‰è§’åŒ–æ¢å¤3Dç‚¹
 p_f1_1_bar = triangulate(observations(:,1), observations(:,secondViewIdx),C_12, t_21_1);
 
 %initialEst = quatToRotMat(camStates{1}.q_CG)'*p_f1_1_bar + camStates{1}.p_C_G;
 
 
-%²Î¿¼ÎÄÏ×1£º¡°The Battle for Filter Supremacy: A Comparative Study of the
-%     Multi-State Constraint Kalman Filter and the Sliding Window Filter¡±
+%å‚è€ƒæ–‡çŒ®1ï¼šâ€œThe Battle for Filter Supremacy: A Comparative Study of the
+%     Multi-State Constraint Kalman Filter and the Sliding Window Filterâ€
 
-%²Î¿¼ÎÄÏ×2£º¡°A Multi-State Constraint Kalman Filter
-%     for Vision-aided Inertial Navigation¡±
+%å‚è€ƒæ–‡çŒ®2ï¼šâ€œA Multi-State Constraint Kalman Filter
+%     for Vision-aided Inertial Navigationâ€
 
 
 xBar = p_f1_1_bar(1);
 yBar = p_f1_1_bar(2);
 zBar = p_f1_1_bar(3);
-%ÓÃÄæÉî¶È²ÎÊı»¯3Dµã
+%ç”¨é€†æ·±åº¦å‚æ•°åŒ–3Dç‚¹
 alphaBar = xBar/zBar;
 betaBar = yBar/zBar;
 rhoBar = 1/zBar;
 
-%xEstÎªÄæÉî¶ÈĞÎÊ½±íÊ¾µÄ²ÎÊıÏòÁ¿
+%xEstä¸ºé€†æ·±åº¦å½¢å¼è¡¨ç¤ºçš„å‚æ•°å‘é‡
 xEst = [alphaBar; betaBar; rhoBar];
-%»ñÈ¡Ïà»ú×´Ì¬³¤¶È
+%è·å–ç›¸æœºçŠ¶æ€é•¿åº¦
 Cnum = length(camStates);
 
 %Optimize
-%ÉèÖÃ¸ßË¹Å£¶ÙÓÅ»¯µÄ²ÎÊı£¨µü´ú´ÎÊı£©
+%è®¾ç½®é«˜æ–¯ç‰›é¡¿ä¼˜åŒ–çš„å‚æ•°ï¼ˆè¿­ä»£æ¬¡æ•°ï¼‰
 maxIter = 10;
 Jprev = Inf;
 
 for optI = 1:maxIter
-    %³õÊ¼»¯Îó²îÏòÁ¿EºÍÎó²îÈ¨ÖØ¾ØÕóW
+    %åˆå§‹åŒ–è¯¯å·®å‘é‡Eå’Œè¯¯å·®æƒé‡çŸ©é˜µW
     E = zeros(2*Cnum, 3);
     W = zeros(2*Cnum, 2*Cnum);
     errorVec = zeros(2*Cnum, 1);
@@ -79,26 +79,26 @@ for optI = 1:maxIter
 
         %Form the error vector
         zHat = observations(:, iState);
-        %²Î¿¼ÎÄÏ×1£º¹«Ê½36
-        %²Î¿¼ÎÄÏ×2£º¹«Ê½32-¹«Ê½37
+        %å‚è€ƒæ–‡çŒ®1ï¼šå…¬å¼36
+        %å‚è€ƒæ–‡çŒ®2ï¼šå…¬å¼32-å…¬å¼37
         % |h1|         |alpha|
         % |h2| = Ci1 * |beta | + rho * t_1i_i
         % |h3|         |  1  |
-        % ÎªÁËÍÆµ¼·½±ã£¬ÕâÃ´±í´ï£º
+        % ä¸ºäº†æ¨å¯¼æ–¹ä¾¿ï¼Œè¿™ä¹ˆè¡¨è¾¾ï¼š
         % |h1|                             |alpha|
         % |h2| =(Ci1(:1),Ci1(:1),Ci1(:1))* |beta | + rho * t_1i_i
         % |h3|                             |  1  |
         h = C_i1*[alphaBar; betaBar; 1] + rhoBar*t_1i_i;
 
-        %¼ÆËãÖØÍ¶Ó°Îó²î
-        %²Î¿¼ÎÄÏ×1£º¹«Ê½37
+        %è®¡ç®—é‡æŠ•å½±è¯¯å·®
+        %å‚è€ƒæ–‡çŒ®1ï¼šå…¬å¼37
         %e = z - |h1/h3|
         %        |h2/h3|
         errorVec((2*iState - 1):(2*iState),1) = zHat - [h(1); h(2)]/h(3);
 
         %Form the Jacobian
-        %¼ÆËãÖØÍ¶Ó°Îó²î¶ÔÄæÉî¶È²ÎÊıxEstµÄÑÅ¿Ë±È¾ØÕó
-        %²Î¿¼ÎÄÏ×1£º¹«Ê½39
+        %è®¡ç®—é‡æŠ•å½±è¯¯å·®å¯¹é€†æ·±åº¦å‚æ•°xEstçš„é›…å…‹æ¯”çŸ©é˜µ
+        %å‚è€ƒæ–‡çŒ®1ï¼šå…¬å¼39
         %de/dh = |-1/h3     0      h1/h3^2|
         %        |0       -1/h3    h2/h3^2|
         %dh/d(alpha,beta,rho) = |C_i1(:,1)  C_i1(:,2)  t_li_i|
@@ -119,22 +119,22 @@ for optI = 1:maxIter
                     -t_1i_i(2)/h(3) + (h(2)/h(3)^2)*t_1i_i(3)];
 
         Eblock = [dEdalpha dEdbeta dEdrho];
-        %¹¹ÔìËùÓĞÌØÕ÷µãµÄÍ¶Ó°Îó²î¹ØÓÚÄæÉî¶È²ÎÊıµÄÑÅ¿Ë±È¾ØÕó
+        %æ„é€ æ‰€æœ‰ç‰¹å¾ç‚¹çš„æŠ•å½±è¯¯å·®å…³äºé€†æ·±åº¦å‚æ•°çš„é›…å…‹æ¯”çŸ©é˜µ
         E((2*iState - 1):(2*iState), :) = Eblock;
     end
     
     %Calculate the cost function
-    %¼ÆËã´ú¼Ûº¯Êı(ÓÃÓÚÅĞ¶ÏÖÕÖ¹Ìõ¼ş)£º0.5 * error' * W^(-1) * error 
+    %è®¡ç®—ä»£ä»·å‡½æ•°(ç”¨äºåˆ¤æ–­ç»ˆæ­¢æ¡ä»¶)ï¼š0.5 * error' * W^(-1) * error 
     Jnew = 0.5*errorVec'*(W\errorVec);
     %Solve!
-    %Çó½âÓÅ»¯º¯Êı£¬£¨E'*W^(-1)*E£©* dx_star = -E'*W^(-1)*errorVec£¬µÃµ½µü´úÄæ²ÎÊıxEstÔöÁ¿
+    %æ±‚è§£ä¼˜åŒ–å‡½æ•°ï¼Œï¼ˆE'*W^(-1)*Eï¼‰* dx_star = -E'*W^(-1)*errorVecï¼Œå¾—åˆ°è¿­ä»£é€†å‚æ•°xEstå¢é‡
     EWE = E'*(W\E);
-    %RCOND·µ»ØÖµ½Ó½ü1½á¹ûÓÅ£¬·µ»Ø½Ó½ü0½á¹û²î
+    %RCONDè¿”å›å€¼æ¥è¿‘1ç»“æœä¼˜ï¼Œè¿”å›æ¥è¿‘0ç»“æœå·®
     RCOND = rcond(EWE);
     dx_star =  (EWE)\(-E'*(W\errorVec));
     
     xEst = xEst + dx_star;
-    %¼ÆËãµü´úÏÂ½µ³Ì¶È£¬ÓÃÓÚÅĞ¶ÏÖÕÖ¹Ìõ¼ş£¬ÏÂ½µ²»¶¯ÁË£¬¾ÍÈÏÎªÊÕÁ²µ½×îÓÅÁË
+    %è®¡ç®—è¿­ä»£ä¸‹é™ç¨‹åº¦ï¼Œç”¨äºåˆ¤æ–­ç»ˆæ­¢æ¡ä»¶ï¼Œä¸‹é™ä¸åŠ¨äº†ï¼Œå°±è®¤ä¸ºæ”¶æ•›åˆ°æœ€ä¼˜äº†
     Jderiv = abs((Jnew - Jprev)/Jnew);
     
     Jprev = Jnew;
@@ -149,22 +149,22 @@ for optI = 1:maxIter
     
 end
 
-%½«ÄæÉî¶ÈĞÎÊ½±íÊ¾µÄ3Dµã×ª»»³ÉÅ·Ê½×ø±êÏµÏÂµÄ3Dµã×ø±ê
+%å°†é€†æ·±åº¦å½¢å¼è¡¨ç¤ºçš„3Dç‚¹è½¬æ¢æˆæ¬§å¼åæ ‡ç³»ä¸‹çš„3Dç‚¹åæ ‡
 p_f_G = (1/xEst(3))*quatToRotMat(camStates{1}.q_CG)'*[xEst(1:2); 1] + camStates{1}.p_C_G; 
 
-        %Èı½Ç»¯»Ö¸´3Dµã
+        %ä¸‰è§’åŒ–æ¢å¤3Dç‚¹
     function [p_f1_1] = triangulate(obs1, obs2, C_12, t_21_1)
-    %obs1£¬obs2£ºÁ½¸öÏà»úÖĞÆ¥ÅäÌØÕ÷µã×ø±ê£¨Ïà»ú×ø±êÏµ£©
-    %C_12£¬t_21_1£ºÁ½¸öÏà»úÖ®¼äµÄ±ä»»¹ØÏµ
+    %obs1ï¼Œobs2ï¼šä¸¤ä¸ªç›¸æœºä¸­åŒ¹é…ç‰¹å¾ç‚¹åæ ‡ï¼ˆç›¸æœºåæ ‡ç³»ï¼‰
+    %C_12ï¼Œt_21_1ï¼šä¸¤ä¸ªç›¸æœºä¹‹é—´çš„å˜æ¢å…³ç³»
         
         % triangulate Triangulates 3D points from two sets of feature vectors and a
         % a frame-to-frame transformation
 
            %Calculate unit vectors
-           %½«Ïà»ú×ø±êÏµÏÂ×ø±ê±äÎªÆë´Î×ø±ê[x,y,1]
+           %å°†ç›¸æœºåæ ‡ç³»ä¸‹åæ ‡å˜ä¸ºé½æ¬¡åæ ‡[x,y,1]
            v_1 = [obs1;1];
            v_2 = [obs2;1];
-           %¹éÒ»»¯×ø±ê
+           %å½’ä¸€åŒ–åæ ‡
            v_1 = v_1/norm(v_1);
            v_2 = v_2/norm(v_2);
 
@@ -175,12 +175,12 @@ p_f_G = (1/xEst(3))*quatToRotMat(camStates{1}.q_CG)'*[xEst(1:2); 1] + camStates{
 %        c1-------c2
 %             t
 %
-% p_f1_1£º±íÊ¾3DµãÔÚP_f1ÔÚc1×ø±êÏµÏÂ×ø±ê
-% c1£º±íÊ¾µÚÒ»¸öÏà»ú
-% c2£º±íÊ¾µÚ¶ş¸öÏà»ú
-% t_21_1£ºc1Óëc2Ö®¼äµÄÏòÁ¿£¨c1Ö¸Ïòc2£¬c1×ø±êÏµ£©
-% v1£ºc1Óë3DµãP_f1Ö®¼äµÄµ¥Î»ÏòÁ¿£¨c1Ö¸ÏòP_f1£¬c1×ø±êÏµ£©£¬Ôò£ºt_c1_P_f1 = v1 * scale1
-% v2£ºc2Óë3DµãP_f1Ö®¼äµÄµ¥Î»ÏòÁ¿£¨c2Ö¸ÏòP_f1£¬c2×ø±êÏµ£©£¬Ôò£ºt_c2_P_f1 = C_12 * £¨v2 * scale2£©
+% p_f1_1ï¼šè¡¨ç¤º3Dç‚¹åœ¨P_f1åœ¨c1åæ ‡ç³»ä¸‹åæ ‡
+% c1ï¼šè¡¨ç¤ºç¬¬ä¸€ä¸ªç›¸æœº
+% c2ï¼šè¡¨ç¤ºç¬¬äºŒä¸ªç›¸æœº
+% t_21_1ï¼šc1ä¸c2ä¹‹é—´çš„å‘é‡ï¼ˆc1æŒ‡å‘c2ï¼Œc1åæ ‡ç³»ï¼‰
+% v1ï¼šc1ä¸3Dç‚¹P_f1ä¹‹é—´çš„å•ä½å‘é‡ï¼ˆc1æŒ‡å‘P_f1ï¼Œc1åæ ‡ç³»ï¼‰ï¼Œåˆ™ï¼št_c1_P_f1 = v1 * scale1
+% v2ï¼šc2ä¸3Dç‚¹P_f1ä¹‹é—´çš„å•ä½å‘é‡ï¼ˆc2æŒ‡å‘P_f1ï¼Œc2åæ ‡ç³»ï¼‰ï¼Œåˆ™ï¼št_c2_P_f1 = C_12 * ï¼ˆv2 * scale2ï¼‰
 
 % t_c1_P_f1 - t_c2_P_f1 = t
 %                   |scale1|

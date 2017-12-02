@@ -1,13 +1,13 @@
 function  [updatedMsckfState, featCamStates, camStateIndices] = removeTrackedFeature(msckfState, featureId)
-%º¯Êı¹¦ÄÜ£º´ÓËùÓĞÏà»ú×´Ì¬ÖĞÌŞ³ı¸ÃÌØÕ÷µã£¨ÒÑÖ¤Ã÷¹Û²âµ½µÄ¸ÃÌØÕ÷µã×ã¹»ºÃ£©£¬²¢½«Éæ¼°µ½µÄÏà»ú×´Ì¬Ìí¼Óµ½×´Ì¬´ıÓÅ»¯ÁĞ±íÖĞ
-%£¨Ïà»ú×´Ì¬Ö»°üº¬Î»ÖÃºÍËÄÔªÊı£¬µ«ÊÇÍ¬Ñù»á¼ÇÂ¼¸ú×Ùµ½µÄÌØÕ÷µãÕâ¸öÊôĞÔ£©
-%·µ»ØÖµ£º
-%      updatedMsckfState£º×´Ì¬´ıÓÅ»¯ÁĞ±í£¨msckf×´Ì¬£©
-%      featCamStates£º´ıÓÅ»¯µÄÏà»ú×´Ì¬£¨¸ÃÏà»ú¹Û²âµÄÌØÕ÷µã³¬³öÊÓÒ°»ò³¤ÆÚ±»¹Û²âµ½£¨³¬³öÔÊĞíµÄÔö¹ãÏà»ú×´Ì¬ÉÏÏŞ£©£©
-%      camStateIndices£º´ıÓÅ»¯µÄÏà»úË÷Òı
-%ÊäÈëÖµ£º
-%      msckfState£ºmsckf×´Ì¬
-%      featureId£ºÒªÌŞ³ıµÄÌØÕ÷ID
+%å‡½æ•°åŠŸèƒ½ï¼šä»æ‰€æœ‰ç›¸æœºçŠ¶æ€ä¸­å‰”é™¤è¯¥ç‰¹å¾ç‚¹ï¼ˆå·²è¯æ˜è§‚æµ‹åˆ°çš„è¯¥ç‰¹å¾ç‚¹è¶³å¤Ÿå¥½ï¼‰ï¼Œå¹¶å°†æ¶‰åŠåˆ°çš„ç›¸æœºçŠ¶æ€æ·»åŠ åˆ°çŠ¶æ€å¾…ä¼˜åŒ–åˆ—è¡¨ä¸­
+%ï¼ˆç›¸æœºçŠ¶æ€åªåŒ…å«ä½ç½®å’Œå››å…ƒæ•°ï¼Œä½†æ˜¯åŒæ ·ä¼šè®°å½•è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹è¿™ä¸ªå±æ€§ï¼‰
+%è¿”å›å€¼ï¼š
+%      updatedMsckfStateï¼šçŠ¶æ€å¾…ä¼˜åŒ–åˆ—è¡¨ï¼ˆmsckfçŠ¶æ€ï¼‰
+%      featCamStatesï¼šå¾…ä¼˜åŒ–çš„ç›¸æœºçŠ¶æ€ï¼ˆè¯¥ç›¸æœºè§‚æµ‹çš„ç‰¹å¾ç‚¹è¶…å‡ºè§†é‡æˆ–é•¿æœŸè¢«è§‚æµ‹åˆ°ï¼ˆè¶…å‡ºå…è®¸çš„å¢å¹¿ç›¸æœºçŠ¶æ€ä¸Šé™ï¼‰ï¼‰
+%      camStateIndicesï¼šå¾…ä¼˜åŒ–çš„ç›¸æœºç´¢å¼•
+%è¾“å…¥å€¼ï¼š
+%      msckfStateï¼šmsckfçŠ¶æ€
+%      featureIdï¼šè¦å‰”é™¤çš„ç‰¹å¾ID
 
 %REMOVETRACKEDFEATURE Remove tracked feature from camStates and extract all
 %camera states that include it
@@ -15,12 +15,12 @@ function  [updatedMsckfState, featCamStates, camStateIndices] = removeTrackedFea
     updatedCamStates = msckfState.camStates;
     featCamStates = {};
     camStateIndices = [];
-    %±éÀúmsckfµÄÏà»ú×´Ì¬
+    %éå†msckfçš„ç›¸æœºçŠ¶æ€
     for c_i = 1:length(updatedCamStates)
-        %Ïà»ú×´Ì¬ÖĞ¼ÇÂ¼ÁË¸ú×Ùµ½µÄÌØÕ÷µã£¬ÅĞ¶ÏÒªÌŞ³ıµÄÌØÕ÷µãÊÇ·ñÔÚÆäÄÚ
+        %ç›¸æœºçŠ¶æ€ä¸­è®°å½•äº†è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹ï¼Œåˆ¤æ–­è¦å‰”é™¤çš„ç‰¹å¾ç‚¹æ˜¯å¦åœ¨å…¶å†…
         featIdx = find(featureId == updatedCamStates{c_i}.trackedFeatureIds);
-        %Èç¹ûÒªÌŞ³ıµÄÌØÕ÷µãÊÇ·ñÔÚµ±Ç°Ïà»ú×·×Ùµ½µÄÌØÕ÷ÁĞ±íÖĞ£¬Ôò½«ÆäÌŞ³ı£¨ÖÃÎª¿Õ£©
-        %½«¸ÃÏà»ú×´Ì¬Ìí¼Óµ½½«ÓÅ»¯µÄ×´Ì¬ÁĞ±íÖĞ
+        %å¦‚æœè¦å‰”é™¤çš„ç‰¹å¾ç‚¹æ˜¯å¦åœ¨å½“å‰ç›¸æœºè¿½è¸ªåˆ°çš„ç‰¹å¾åˆ—è¡¨ä¸­ï¼Œåˆ™å°†å…¶å‰”é™¤ï¼ˆç½®ä¸ºç©ºï¼‰
+        %å°†è¯¥ç›¸æœºçŠ¶æ€æ·»åŠ åˆ°å°†ä¼˜åŒ–çš„çŠ¶æ€åˆ—è¡¨ä¸­
         if ~isempty(featIdx)
             updatedCamStates{c_i}.trackedFeatureIds(featIdx) = [];
             camStateIndices(end + 1) = c_i;

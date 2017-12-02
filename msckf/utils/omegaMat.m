@@ -6,11 +6,11 @@ function bigOmega = omegaMat(omega)
         error('Input vector must be 3x1');
     end
 
-%¡¡ËÄÔªÊı£Ê£Ğ£Ì×ø±êÏµ,ËÄÔªÊıÊµ²¿ÔÚ×îºó[q1 q2 q3 q0]
-%¡¡£ü 0    wz  -wy  wx |
-%¡¡£ü-wz   0    wx  wy |
-%¡¡£ü wy  -wx   0   wz |
-%¡¡£ü-wx  -wy  -wz   0 |
+%ã€€å››å…ƒæ•°ï¼ªï¼°ï¼¬åæ ‡ç³»,å››å…ƒæ•°å®éƒ¨åœ¨æœ€å[q1 q2 q3 q0]
+%ã€€ï½œ 0    wz  -wy  wx |
+%ã€€ï½œ-wz   0    wx  wy |
+%ã€€ï½œ wy  -wx   0   wz |
+%ã€€ï½œ-wx  -wy  -wz   0 |
     bigOmega = [ -crossMat(omega),  omega;
                  -omega',            0 ];
 end

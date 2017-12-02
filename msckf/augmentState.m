@@ -1,53 +1,53 @@
 function msckfState_aug = augmentState(msckfState, camera, state_k)
-%º¯Êı¹¦ÄÜ£ºmsckf×´Ì¬Á¿ÖĞÔö¹ãÏà»úµÄ×´Ì¬£¬Ôö¹ãÑÅ¿Ë±È£¬Ôö¹ãĞ­·½²î¾ØÕó£¬²¢¸üĞÂĞ­·½²î¾ØÕó
+%å‡½æ•°åŠŸèƒ½ï¼šmsckfçŠ¶æ€é‡ä¸­å¢å¹¿ç›¸æœºçš„çŠ¶æ€ï¼Œå¢å¹¿é›…å…‹æ¯”ï¼Œå¢å¹¿åæ–¹å·®çŸ©é˜µï¼Œå¹¶æ›´æ–°åæ–¹å·®çŸ©é˜µ
 %
-%·µ»ØÖµ£º
-%      msckfState_aug£ºÔö¹ãºóµÄ×´Ì¬Á¿
-%ÊäÈëÖµ£º
-%      msckfState£ºÔö¹ãÇ°µÄ×´Ì¬Á¿
-%      camera£º°üº¬ÁËÏà»úÓëIMUÖ®¼äµÄÎ»×Ë¹ØÏµ
-%      state_k£º¸ÃÖ¡IDºÅ
+%è¿”å›å€¼ï¼š
+%      msckfState_augï¼šå¢å¹¿åçš„çŠ¶æ€é‡
+%è¾“å…¥å€¼ï¼š
+%      msckfStateï¼šå¢å¹¿å‰çš„çŠ¶æ€é‡
+%      cameraï¼šåŒ…å«äº†ç›¸æœºä¸IMUä¹‹é—´çš„ä½å§¿å…³ç³»
+%      state_kï¼šè¯¥å¸§IDå·
 
 % Augments the MSCKF state with a new camera pose    
 
-    %½«imu×´Ì¬ÖĞµÄËÄÔªÊı×ª»¯ÎªĞı×ª¾ØÕó£¬globleµ½imu
+    %å°†imuçŠ¶æ€ä¸­çš„å››å…ƒæ•°è½¬åŒ–ä¸ºæ—‹è½¬çŸ©é˜µï¼Œglobleåˆ°imu
     C_IG = quatToRotMat(msckfState.imuState.q_IG);
     
     % Compute camera pose from current IMU pose
-    %²½Öè1£ºÓÉIMUÒÔ¼°IMUÓëcameraµÄ¹ÌÁ¬¹ØÏµµÃµ½Ïà»úµÄÎ»ÖÃºÍ×ËÌ¬
-    %µÃµ½globalµ½Ïà»úµÄ±ä»»ËÄÔªÊı
+    %æ­¥éª¤1ï¼šç”±IMUä»¥åŠIMUä¸cameraçš„å›ºè¿å…³ç³»å¾—åˆ°ç›¸æœºçš„ä½ç½®å’Œå§¿æ€
+    %å¾—åˆ°globalåˆ°ç›¸æœºçš„å˜æ¢å››å…ƒæ•°
     q_CG = quatLeftComp(camera.q_CI) * msckfState.imuState.q_IG;
-    %µÃµ½Ïà»úÔÚÊÀ½ç×ø±êÏµÏÂµÄÎ»ÖÃ
+    %å¾—åˆ°ç›¸æœºåœ¨ä¸–ç•Œåæ ‡ç³»ä¸‹çš„ä½ç½®
     p_C_G = msckfState.imuState.p_I_G + C_IG' * camera.p_C_I;
 
     % Build MSCKF covariance matrix
-    %²½Öè2£º¹¹ÔìÔö¹ãÇ°µÄĞ­·½²î¾ØÕó£º
-    % |imuĞ­·½²î      imuÓëÏà»úĞ­·½²î|
-    % |Ïà»úÓëimuĞ­·½²î     Ïà»úĞ­·½²î|
+    %æ­¥éª¤2ï¼šæ„é€ å¢å¹¿å‰çš„åæ–¹å·®çŸ©é˜µï¼š
+    % |imuåæ–¹å·®      imuä¸ç›¸æœºåæ–¹å·®|
+    % |ç›¸æœºä¸imuåæ–¹å·®     ç›¸æœºåæ–¹å·®|
     P = [msckfState.imuCovar, msckfState.imuCamCovar;
         msckfState.imuCamCovar', msckfState.camCovar];
     
     % Camera state Jacobian
-    %²½Öè3£ºÔö¹ã×´Ì¬ÒÔºó£¬ĞèÒªµÃµ½Ôö¹ã×´Ì¬£¨Ïà»úÎ»ÖÃ¡¢Ïà»úËÄÔªÊı£©¶Ômsckf×´Ì¬£¨Ôö¹ãÇ°ÒÔºóµÄ×´Ì¬£©µÄÑÅ¿Ë±È
-    %cameraÖĞ°üº¬ÁËcameraÓëIMUÖ®¼äµÄ±ä»»¹ØÏµ
-    %msckfState.imuStateÎª×´Ì¬ÖĞµÄIMUÏà¹Ø²¿·Ö
-    %msckfState.camStatesÎª×´Ì¬ÖĞµÄÏà»ú²¿·Ö
+    %æ­¥éª¤3ï¼šå¢å¹¿çŠ¶æ€ä»¥åï¼Œéœ€è¦å¾—åˆ°å¢å¹¿çŠ¶æ€ï¼ˆç›¸æœºä½ç½®ã€ç›¸æœºå››å…ƒæ•°ï¼‰å¯¹msckfçŠ¶æ€ï¼ˆå¢å¹¿å‰ä»¥åçš„çŠ¶æ€ï¼‰çš„é›…å…‹æ¯”
+    %cameraä¸­åŒ…å«äº†cameraä¸IMUä¹‹é—´çš„å˜æ¢å…³ç³»
+    %msckfState.imuStateä¸ºçŠ¶æ€ä¸­çš„IMUç›¸å…³éƒ¨åˆ†
+    %msckfState.camStatesä¸ºçŠ¶æ€ä¸­çš„ç›¸æœºéƒ¨åˆ†
     J = calcJ(camera, msckfState.imuState, msckfState.camStates);
     
-    %ÏÖÓĞ×´Ì¬ÖĞºÍcameraÓĞ¹ØµÄ×´Ì¬Á¿¸öÊı
+    %ç°æœ‰çŠ¶æ€ä¸­å’Œcameraæœ‰å…³çš„çŠ¶æ€é‡ä¸ªæ•°
     N = size(msckfState.camStates,2);
     
-    %²½Öè4£º¹¹ÔìÔö¹ãºóµÄĞ­·½²î¾ØÕó£º
-    %²½Öè4.1£ºÔö¹ãºóÏà»ú×´Ì¬ºóËùÓĞ×´Ì¬µÄÑÅ¿Ë±È¾ØÕó
+    %æ­¥éª¤4ï¼šæ„é€ å¢å¹¿åçš„åæ–¹å·®çŸ©é˜µï¼š
+    %æ­¥éª¤4.1ï¼šå¢å¹¿åç›¸æœºçŠ¶æ€åæ‰€æœ‰çŠ¶æ€çš„é›…å…‹æ¯”çŸ©é˜µ
     tempMat = [eye(12+6*N); J];
     
     % Augment the MSCKF covariance matrix
-    %²½Öè4.2£º¸üĞÂÔö¹ãºóÏà»ú×´Ì¬ºóËùÓĞ×´Ì¬µÄĞ­·½²î¾ØÕó
+    %æ­¥éª¤4.2ï¼šæ›´æ–°å¢å¹¿åç›¸æœºçŠ¶æ€åæ‰€æœ‰çŠ¶æ€çš„åæ–¹å·®çŸ©é˜µ
     P_aug = tempMat * P * tempMat';
     
     % Break everything into appropriate structs
-    %µÃµ½Ôö¹ãºóµÄ×´Ì¬Á¿ÏòÁ¿
-    %[Ö®Ç°µÄ×´Ì¬£¬camState{N+1}]
+    %å¾—åˆ°å¢å¹¿åçš„çŠ¶æ€é‡å‘é‡
+    %[ä¹‹å‰çš„çŠ¶æ€ï¼ŒcamState{N+1}]
     %camState[P_C_G,q_CG,state_k,trackedFeatureIds]
     msckfState_aug = msckfState;
     msckfState_aug.camStates{N+1}.p_C_G = p_C_G;

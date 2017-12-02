@@ -1,5 +1,5 @@
 function matrixPSD = enforcePSD(matrix)
-%ǿ��Э�����Ϊ�Գƾ������Խ���Ԫ��ȡ����ֵ���ǶԽ���Ԫ�ضԳ�Ԫ��ȡƽ��ֵ
+%强制协方差变为对称矩阵：主对角线元素取绝对值，非对角线元素对称元素取平均值
 
     if size(matrix,1) ~= size(matrix,2)
         error('Input matrix is not symmetric.');

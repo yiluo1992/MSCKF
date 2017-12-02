@@ -1,7 +1,7 @@
 function F = calcF(imuState_k, measurements_k)
-%Îó²î×´Ì¬¸üĞÂ¾ØÕó
-%¶ÔÓ¦ÂÛÎÄ¹«Ê½23£º¡°The Battle for Filter Supremacy: A Comparative Study of the
-%      Multi-State Constraint Kalman Filter and the Sliding Window Filter¡±
+%è¯¯å·®çŠ¶æ€æ›´æ–°çŸ©é˜µ
+%å¯¹åº”è®ºæ–‡å…¬å¼23ï¼šâ€œThe Battle for Filter Supremacy: A Comparative Study of the
+%      Multi-State Constraint Kalman Filter and the Sliding Window Filterâ€
 
 % Multiplies the error state in the linearized continuous-time
 % error state model

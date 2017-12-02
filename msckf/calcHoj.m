@@ -1,15 +1,15 @@
 function [H_o_j, A_j, H_x_j] = calcHoj(p_f_G, msckfState, camStateIndices)
-%º¯Êý¹¦ÄÜ£º¼ÆËãÖØÍ¶Ó°Îó²î¶ÔMSCKF×´Ì¬Á¿µÄÑÅ¿Ë±È¾ØÕó£¨MSCKF¹Û²âÄ£ÐÍ£©
+%å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—é‡æŠ•å½±è¯¯å·®å¯¹MSCKFçŠ¶æ€é‡çš„é›…å…‹æ¯”çŸ©é˜µï¼ˆMSCKFè§‚æµ‹æ¨¡åž‹ï¼‰
 %
-%·µ»ØÖµ£º
-%      H_o_j£ºA_j'*H_x_j
-%      A_j£ºÎªH_f_jµÄ×ó³ËÁã¿Õ¼ä±ä»»¾ØÕó£¬
-%           H_f_jÊÇÏà»ú×ø±êÏµÏÂÆë´Î×ø±ê(x y)¶ÔÊÀ½ç×ø±êÏµÏÂ3DµãµÄÑÅ¿Ë±È¾ØÕó           
-%      H_x_j£ºµÃµ½Ïà»ú×ø±êÏµÏÂÆë´Î×ø±ê(x y)¶ÔmsckfÖÐ×´Ì¬Á¿µÄÑÅ¿Ë±È¾ØÕó
-%ÊäÈëÖµ£º
-%      p_f_G£ºÌØÕ÷µãÔÚglobal×ø±êÏµÏÂ×ø±ê
-%      msckfState£ºµ±Ç°msckf×´Ì¬
-%      camStateIndices£ºµ±Ç°´°¿ÚÖÐÏà»ú×´Ì¬Ë÷Òý
+%è¿”å›žå€¼ï¼š
+%      H_o_jï¼šA_j'*H_x_j
+%      A_jï¼šä¸ºH_f_jçš„å·¦ä¹˜é›¶ç©ºé—´å˜æ¢çŸ©é˜µï¼Œ
+%           H_f_jæ˜¯ç›¸æœºåæ ‡ç³»ä¸‹é½æ¬¡åæ ‡(x y)å¯¹ä¸–ç•Œåæ ‡ç³»ä¸‹3Dç‚¹çš„é›…å…‹æ¯”çŸ©é˜µ           
+%      H_x_jï¼šå¾—åˆ°ç›¸æœºåæ ‡ç³»ä¸‹é½æ¬¡åæ ‡(x y)å¯¹msckfä¸­çŠ¶æ€é‡çš„é›…å…‹æ¯”çŸ©é˜µ
+%è¾“å…¥å€¼ï¼š
+%      p_f_Gï¼šç‰¹å¾ç‚¹åœ¨globalåæ ‡ç³»ä¸‹åæ ‡
+%      msckfStateï¼šå½“å‰msckfçŠ¶æ€
+%      camStateIndicesï¼šå½“å‰çª—å£ä¸­ç›¸æœºçŠ¶æ€ç´¢å¼•
 
 %CALCHOJ Calculates H_o_j according to Mourikis 2007
 % Inputs: p_f_G: feature location in the Global frame
@@ -30,36 +30,36 @@ for camStateIndex = camStateIndices
 
     C_CG = quatToRotMat(camState.q_CG);
     %The feature position in the camera frame
-    %µÃµ½3DµãÔÚµ±Ç°Ïà»ú×ø±êÏµÏÂµÄ×ø±ê
+    %å¾—åˆ°3Dç‚¹åœ¨å½“å‰ç›¸æœºåæ ‡ç³»ä¸‹çš„åæ ‡
     p_f_C = C_CG*(p_f_G - camState.p_C_G);
 
     X = p_f_C(1);
     Y = p_f_C(2);
     Z = p_f_C(3);
 
-    %µÃµ½Ïà»ú×ø±êÏµÏÂÆë´Î×ø±ê¶Ô·ÇÆë´Î×ø±êµÄÑÅ¿Ë±È¾ØÕó
+    %å¾—åˆ°ç›¸æœºåæ ‡ç³»ä¸‹é½æ¬¡åæ ‡å¯¹éžé½æ¬¡åæ ‡çš„é›…å…‹æ¯”çŸ©é˜µ
     % x = X/Z y = Y/Z
     % |1/Z  0   -X/Z^2|
     % |0   1/Z  -Y/Z^2|
     J_i = (1/Z)*[1 0 -X/Z; 0 1 -Y/Z];
 
-    %µÃµ½Ïà»ú×ø±êÏµÏÂÆë´Î×ø±ê(x y)¶ÔÊÀ½ç×ø±êÏµÏÂ3DµãµÄÑÅ¿Ë±È¾ØÕó
+    %å¾—åˆ°ç›¸æœºåæ ‡ç³»ä¸‹é½æ¬¡åæ ‡(x y)å¯¹ä¸–ç•Œåæ ‡ç³»ä¸‹3Dç‚¹çš„é›…å…‹æ¯”çŸ©é˜µ
     H_f_j((2*c_i - 1):2*c_i, :) = J_i*C_CG;
 
-    %×¢Òâ£ºmsckfÖÐ×´Ì¬Á¿ÊÇÎó²î×´Ì¬Á¿£¬Í¶Ó°Îó²îÖ»ºÍÏà»úÓÐ¹Ø£¬Òò´ËÖ»¶ÔÏà»ú×ËÌ¬ºÍÎ»ÖÃÇóµ¼µÄÑÅ¿Ë±È²»Îª0
-    %µÃµ½Ïà»ú×ø±êÏµÏÂÆë´Î×ø±ê(x y)¶ÔÏà»ú×ËÌ¬µÄÑÅ¿Ë±È¾ØÕó
+    %æ³¨æ„ï¼šmsckfä¸­çŠ¶æ€é‡æ˜¯è¯¯å·®çŠ¶æ€é‡ï¼ŒæŠ•å½±è¯¯å·®åªå’Œç›¸æœºæœ‰å…³ï¼Œå› æ­¤åªå¯¹ç›¸æœºå§¿æ€å’Œä½ç½®æ±‚å¯¼çš„é›…å…‹æ¯”ä¸ä¸º0
+    %å¾—åˆ°ç›¸æœºåæ ‡ç³»ä¸‹é½æ¬¡åæ ‡(x y)å¯¹ç›¸æœºå§¿æ€çš„é›…å…‹æ¯”çŸ©é˜µ
     H_x_j((2*c_i - 1):2*c_i,12+6*(camStateIndex-1) + 1:12+6*(camStateIndex-1) + 3) = J_i*crossMat(p_f_C);
-    %µÃµ½Ïà»ú×ø±êÏµÏÂÆë´Î×ø±ê(x y)¶ÔÏà»úÎ»ÖÃµÄÑÅ¿Ë±È¾ØÕó
+    %å¾—åˆ°ç›¸æœºåæ ‡ç³»ä¸‹é½æ¬¡åæ ‡(x y)å¯¹ç›¸æœºä½ç½®çš„é›…å…‹æ¯”çŸ©é˜µ
     H_x_j((2*c_i - 1):2*c_i,(12+6*(camStateIndex-1) + 4):(12+6*(camStateIndex-1) + 6)) = -J_i*C_CG;
 
     c_i = c_i + 1;
 end
 
-%²Î¿¼ÎÄÏ×£º¡°The Battle for Filter Supremacy: A Comparative Study of the
-%      Multi-State Constraint Kalman Filter and the Sliding Window Filter¡±
-%¹«Ê½47
-%error = z - z_hat = H_x_j * x + H_f_j * p + R_j(xÊÇmsckfÖÐµÄ×´Ì¬£¬pÊÇ3Dµã£¬R_jÎªÔëÉù)
-% ×óÓÒÍ¬³ËH_f_jµÄÁã¿Õ¼ä±ä»»¾ØÕóA_j£º
+%å‚è€ƒæ–‡çŒ®ï¼šâ€œThe Battle for Filter Supremacy: A Comparative Study of the
+%      Multi-State Constraint Kalman Filter and the Sliding Window Filterâ€
+%å…¬å¼47
+%error = z - z_hat = H_x_j * x + H_f_j * p + R_j(xæ˜¯msckfä¸­çš„çŠ¶æ€ï¼Œpæ˜¯3Dç‚¹ï¼ŒR_jä¸ºå™ªå£°)
+% å·¦å³åŒä¹˜H_f_jçš„é›¶ç©ºé—´å˜æ¢çŸ©é˜µA_jï¼š
 % ==> A_j' * error = A_j' * H_x_j * x + A_j' * H_f_j * p + A_j' * R_j * A_j
 % ==> A_j' * error = A_j' * H_x_j * x + 0 + A_j' * R_j * A_j
 A_j = null(H_f_j');

@@ -1,30 +1,30 @@
 function [errorVec] = imuError(kState, kMinus1State, imuMeasurement, deltaT)
-%º¯Êı¹¦ÄÜ£º ¼ÆËãkStateÊ±¿ÌÍ¨¹ıIMUÔ¤¹À×´Ì¬ÓëÓÅ»¯×´Ì¬Á¿Ö®¼äµÄÎó²î
+%å‡½æ•°åŠŸèƒ½ï¼š è®¡ç®—kStateæ—¶åˆ»é€šè¿‡IMUé¢„ä¼°çŠ¶æ€ä¸ä¼˜åŒ–çŠ¶æ€é‡ä¹‹é—´çš„è¯¯å·®
 % error_imu = ||IMU_propagation - state||
 %
-%·µ»ØÖµ£º
-%      errorVec£ºÎó²îÏòÁ¿[Æ½ÒÆÎó²î£¬Ğı×ªÎó²î]
-%ÊäÈëÖµ£º
-%      kState£º µ±Ç°Ö¡×´Ì¬
-%      kMinus1State£º ÉÏÒ»Ö¡×´Ì¬
-%      imuMeasurement£º IMU²âÁ¿Öµ
-%      deltaT£ºÁ½Ö¡¼äÊ±¼ä¼ä¸ô
+%è¿”å›å€¼ï¼š
+%      errorVecï¼šè¯¯å·®å‘é‡[å¹³ç§»è¯¯å·®ï¼Œæ—‹è½¬è¯¯å·®]
+%è¾“å…¥å€¼ï¼š
+%      kStateï¼š å½“å‰å¸§çŠ¶æ€
+%      kMinus1Stateï¼š ä¸Šä¸€å¸§çŠ¶æ€
+%      imuMeasurementï¼š IMUæµ‹é‡å€¼
+%      deltaTï¼šä¸¤å¸§é—´æ—¶é—´é—´éš”
 %IMUERROR Compute the 6x1 error vector associated with interoceptive measurement
 
-%ÓÉIMU½ÇËÙ¶È²âÁ¿µÄµ½µÄÁ½Ö¡¼ä×ËÌ¬½ÇÎ¢Ğ¡ÔöÁ¿ÏòÁ¿ psiVec = w * dt
+%ç”±IMUè§’é€Ÿåº¦æµ‹é‡çš„åˆ°çš„ä¸¤å¸§é—´å§¿æ€è§’å¾®å°å¢é‡å‘é‡ psiVec = w * dt
 psiVec = imuMeasurement.omega*deltaT;
-%¹éÒ»»¯×ËÌ¬½ÇÎ¢Ğ¡ÔöÁ¿ÏòÁ¿ psiVec/norm(psiVec)
+%å½’ä¸€åŒ–å§¿æ€è§’å¾®å°å¢é‡å‘é‡ psiVec/norm(psiVec)
 psiMag = norm(psiVec);
-%ÓÉIMUËÙ¶È²âÁ¿ÖµµÃµ½µÄÁ½Ö¡¼äÎ»ÒÆÔöÁ¿ distance = v * dt
+%ç”±IMUé€Ÿåº¦æµ‹é‡å€¼å¾—åˆ°çš„ä¸¤å¸§é—´ä½ç§»å¢é‡ distance = v * dt
 d = imuMeasurement.v*deltaT;
 
 %Compute rotational error (See Lecture8-10)
-%ÓÉ×ËÌ¬½ÇÎ¢Ğ¡ÔöÁ¿ÏòÁ¿¼ÆËãµÃµ½Ğı×ª¾ØÕó
+%ç”±å§¿æ€è§’å¾®å°å¢é‡å‘é‡è®¡ç®—å¾—åˆ°æ—‹è½¬çŸ©é˜µ
 Phi = cos(psiMag)*eye(3) + (1 - cos(psiMag))*(psiVec/psiMag)*(psiVec/psiMag)' - sin(psiMag)*crossMat(psiVec/psiMag);
-%²½Öè1£ºµÃµ½kStateÊ±¿ÌÔ¤¹ÀÖµÓë×´Ì¬Á¿Ö®¼äµÄ²Ğ²î
-%R_kState_hat = Phi*kMinus1State.C_viµÃµ½kStateÊ±¿ÌµÄ×ËÌ¬Ô¤¹ÀÖµ
-%R_kState * R_kState_hat'µÃµ½kStateÊ±¿ÌÔ¤¹ÀÖµÓë×´Ì¬Á¿Ö®¼äµÄ½Ç¶È²Ğ²î
-%ÀıÈç£ºR2 = deltaR * R1£¬ÔòdeltaR = R2 * R1'
+%æ­¥éª¤1ï¼šå¾—åˆ°kStateæ—¶åˆ»é¢„ä¼°å€¼ä¸çŠ¶æ€é‡ä¹‹é—´çš„æ®‹å·®
+%R_kState_hat = Phi*kMinus1State.C_viå¾—åˆ°kStateæ—¶åˆ»çš„å§¿æ€é¢„ä¼°å€¼
+%R_kState * R_kState_hat'å¾—åˆ°kStateæ—¶åˆ»é¢„ä¼°å€¼ä¸çŠ¶æ€é‡ä¹‹é—´çš„è§’åº¦æ®‹å·®
+%ä¾‹å¦‚ï¼šR2 = deltaR * R1ï¼Œåˆ™deltaR = R2 * R1'
 %                                  |    1      -theta_z     theta_y |
 %                                = | theta_z      1        -theta_x |
 %                                  |-theta_y    theta_x        1    |
@@ -32,7 +32,7 @@ eRotMat = kState.C_vi*(Phi*kMinus1State.C_vi)';
 eRot = [eRotMat(2,3); eRotMat(3,1); eRotMat(1,2)];
 
 %Compute translational error
-%²½Öè2£ºµÃµ½kStateÊ±¿ÌÔ¤¹ÀÖµÓë×´Ì¬Á¿Ö®¼äµÄÎ»ÒÆ²Ğ²î
+%æ­¥éª¤2ï¼šå¾—åˆ°kStateæ—¶åˆ»é¢„ä¼°å€¼ä¸çŠ¶æ€é‡ä¹‹é—´çš„ä½ç§»æ®‹å·®
 eTrans = kState.r_vi_i - (kMinus1State.r_vi_i + kMinus1State.C_vi'*d);
 
 errorVec = [eTrans; eRot];

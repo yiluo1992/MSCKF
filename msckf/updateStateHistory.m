@@ -1,13 +1,13 @@
 function imuStates_up = updateStateHistory(imuStates, msckfState, camera, state_k)
-%º¯Êı¹¦ÄÜ£º´ÓMSCKF×´Ì¬ÖĞ¸üĞÂIMUµÄÀúÊ·×´Ì¬£¬ÓÃÏà»úµÄ×´Ì¬¸üĞÂ¶ÔÓ¦Ê±¿ÌimuµÄÎ»×Ë×´Ì¬
+%å‡½æ•°åŠŸèƒ½ï¼šä»MSCKFçŠ¶æ€ä¸­æ›´æ–°IMUçš„å†å²çŠ¶æ€ï¼Œç”¨ç›¸æœºçš„çŠ¶æ€æ›´æ–°å¯¹åº”æ—¶åˆ»imuçš„ä½å§¿çŠ¶æ€
 %
-%·µ»ØÖµ£º
-%      imuStates_up£º½«IMUµÄ×´Ì¬ÓÃMSCKFµÄ×´Ì¬Ìæ´ú
-%ÊäÈëÖµ£º
-%      imuStates£ºIMU×´Ì¬
-%      msckfState£ºµ±Ç°Ö¡£¨state_k£©MSCKF×´Ì¬
-%      camera£º¼ÇÂ¼ÁËÏà»úÓëIMUÖ®¼äµÄ±ä»»¹ØÏµ
-%      state_k£º¼ÇÂ¼¸ÃÖ¡IDºÅ
+%è¿”å›å€¼ï¼š
+%      imuStates_upï¼šå°†IMUçš„çŠ¶æ€ç”¨MSCKFçš„çŠ¶æ€æ›¿ä»£
+%è¾“å…¥å€¼ï¼š
+%      imuStatesï¼šIMUçŠ¶æ€
+%      msckfStateï¼šå½“å‰å¸§ï¼ˆstate_kï¼‰MSCKFçŠ¶æ€
+%      cameraï¼šè®°å½•äº†ç›¸æœºä¸IMUä¹‹é—´çš„å˜æ¢å…³ç³»
+%      state_kï¼šè®°å½•è¯¥å¸§IDå·
 
 % updateStateHistory -- updates IMU state history from current msckfState
 %
@@ -21,11 +21,11 @@ function imuStates_up = updateStateHistory(imuStates, msckfState, camera, state_
 %
 
     % Platitude of the day: Everything that hasn't changed must stay the same
-    %½«msckfÖĞimuµÄÀúÊ·×´Ì¬¸øimuStates_up
+    %å°†msckfä¸­imuçš„å†å²çŠ¶æ€ç»™imuStates_up
     imuStates_up = imuStates;
 
     % Update the current IMU state
-    %ÓÃmsckfÖĞ×îĞÂµÄ£¨state_k£©imuµÄ×´Ì¬Ìí¼Óµ½imuStates_up
+    %ç”¨msckfä¸­æœ€æ–°çš„ï¼ˆstate_kï¼‰imuçš„çŠ¶æ€æ·»åŠ åˆ°imuStates_up
     imuStates_up{state_k}.q_IG = msckfState.imuState.q_IG;
     imuStates_up{state_k}.p_I_G = msckfState.imuState.p_I_G;
     imuStates_up{state_k}.b_g = msckfState.imuState.b_g;
@@ -35,23 +35,23 @@ function imuStates_up = updateStateHistory(imuStates, msckfState, camera, state_
     % Update IMU states corresponding to active camera poses
     
     % Camera to IMU transformation
-    %µÃµ½Ïà»úµ½IMUµÄÆ½ÒÆºÍËÄÔªÊı
+    %å¾—åˆ°ç›¸æœºåˆ°IMUçš„å¹³ç§»å’Œå››å…ƒæ•°
     C_CI = quatToRotMat(camera.q_CI);
     q_IC = rotMatToQuat(C_CI');
     p_I_C = - C_CI' * camera.p_C_I;
     
-    %±éÀúËùÓĞmsckfÖĞËùÓĞÏà»úµÄ×´Ì¬
+    %éå†æ‰€æœ‰msckfä¸­æ‰€æœ‰ç›¸æœºçš„çŠ¶æ€
     for camIdx = 1:size(msckfState.camStates, 2)
-        %µÃµ½globalµ½imuµÄËÄÔªÊı
+        %å¾—åˆ°globalåˆ°imuçš„å››å…ƒæ•°
         q_IG = quatLeftComp(q_IC) * msckfState.camStates{camIdx}.q_CG;
         C_IG = quatToRotMat(q_IG);
         p_C_G = msckfState.camStates{camIdx}.p_C_G;
-        %µÃµ½globalµ½imuµÄÎ»ÖÃ£¬¼´imuÔÚglobal×ø±êÏµÏÂµÄ×ø±ê
+        %å¾—åˆ°globalåˆ°imuçš„ä½ç½®ï¼Œå³imuåœ¨globalåæ ‡ç³»ä¸‹çš„åæ ‡
         p_I_G = p_C_G + C_IG'*C_CI'*p_I_C;
         
         cam_state_k = msckfState.camStates{camIdx}.state_k;
         
-        %ÓÃÏà»úµÄ×´Ì¬¸üĞÂ¶ÔÓ¦Ê±¿ÌimuµÄÎ»×Ë×´Ì¬
+        %ç”¨ç›¸æœºçš„çŠ¶æ€æ›´æ–°å¯¹åº”æ—¶åˆ»imuçš„ä½å§¿çŠ¶æ€
         imuStates_up{cam_state_k}.q_IG = q_IG;
         imuStates_up{cam_state_k}.p_I_G = p_I_G;
     end

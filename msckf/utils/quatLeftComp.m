@@ -1,7 +1,7 @@
 function qLC = quatLeftComp(quat)
 %
 % Computes the left-hand compound operator form of a quaternion
-% using the {i,j,k,1} convention (q^+ in Tim's book)%q的定义不同，公式不同，要统一
+% using the {i,j,k,1} convention (q^+ in Tim's book)%q鐨勫畾涔変笉鍚岋紝鍏紡涓嶅悓锛岃缁熶竴
 %
     if( size(quat,1) ~= 4 || size(quat,2) ~= 1 )
         error('Input quaternion must be 4x1');

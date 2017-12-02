@@ -1,16 +1,16 @@
 function J = calcJ(camera, imuState_k, camStates_k)
-%º¯Êı¹¦ÄÜ£ºµÃµ½ÒªÔö¹ãµÄ×´Ì¬£¨Ïà»úÎ»ÖÃ¡¢Ïà»úËÄÔªÊı£©¶ÔÖ®Ç°ÒÑÓĞ×´Ì¬µÄÑÅ¿Ë±È
+%å‡½æ•°åŠŸèƒ½ï¼šå¾—åˆ°è¦å¢å¹¿çš„çŠ¶æ€ï¼ˆç›¸æœºä½ç½®ã€ç›¸æœºå››å…ƒæ•°ï¼‰å¯¹ä¹‹å‰å·²æœ‰çŠ¶æ€çš„é›…å…‹æ¯”
 
-% ²Î¿¼ÎÄÏ×£º¡°The Battle for Filter Supremacy: A Comparative Study of the
-%    Multi-State Constraint Kalman Filter and the Sliding Window Filter¡±
+% å‚è€ƒæ–‡çŒ®ï¼šâ€œThe Battle for Filter Supremacy: A Comparative Study of the
+%    Multi-State Constraint Kalman Filter and the Sliding Window Filterâ€
 
 % Jacobian of feature observations w.r.t. feature locations
 
     C_CI = quatToRotMat(camera.q_CI);
     C_IG = quatToRotMat(imuState_k.q_IG);
     
-    %²Î¿¼ÎÄÏ× ¹«Ê½10
-    %Ôö¹ãµÄÏà»úÎ»ÖÃÓëËÄÔªÊı£¬¶ÔÔö¹ãºóµÄ×´Ì¬µÄÆ«µ¼£¨ÑÅ¿Ë±È£©
+    %å‚è€ƒæ–‡çŒ® å…¬å¼10
+    %å¢å¹¿çš„ç›¸æœºä½ç½®ä¸å››å…ƒæ•°ï¼Œå¯¹å¢å¹¿åçš„çŠ¶æ€çš„åå¯¼ï¼ˆé›…å…‹æ¯”ï¼‰
     % (camera_p_k+1 camera_q_k+1) = J * (imu_q_k, imu_b_w_k, imu_b_v_k, imu_p_k, camera_p_k, camera_q_k)
     J = zeros(6, 12 + 6*size(camStates_k,2));
     J(1:3,1:3) = C_CI;

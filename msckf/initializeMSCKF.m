@@ -1,30 +1,30 @@
 function [msckfState, featureTracks, trackedFeatureIds] = initializeMSCKF(firstImuState, firstMeasurements, camera, state_k, noiseParams)
-%º¯Êı¹¦ÄÜ£º³õÊ¼»¯×´Ì¬£¬³õÊ¼»¯¸ú×Ùµ½µÄÌØÕ÷µã£¬µÚÒ»Ö¡ËùÓĞµÄÌØÕ÷µãÈÏÎª¶¼±»¸ú×ÙÉÏ
+%å‡½æ•°åŠŸèƒ½ï¼šåˆå§‹åŒ–çŠ¶æ€ï¼Œåˆå§‹åŒ–è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹ï¼Œç¬¬ä¸€å¸§æ‰€æœ‰çš„ç‰¹å¾ç‚¹è®¤ä¸ºéƒ½è¢«è·Ÿè¸ªä¸Š
 %
-%·µ»ØÖµ£º
-%      msckfState£ºÔö¹ãºóµÄµÄ×´Ì¬£¬IMUÏà¹Ø×´Ì¬¼ÓÉÏÒ»¸öÏà»úÎ»×Ë
-%      featureTracks£º¼ÇÂ¼¸ú×Ùµ½µÄÌØÕ÷µã£¬³õÊ¼»¯Ê±£¬ËùÓĞµÄÌØÕ÷µãÈÏÎª¶¼±»¸ú×Ùµ½ÁË
-%      trackedFeatureIds£º¼ÇÂ¼¸ú×Ùµ½µÄÌØÕ÷µãµÄIDºÅ
-%ÊäÈëÖµ£º
-%      firstImuState£ºIMU³õÊ¼×´Ì¬
-%      firstMeasurements£º³õÊ¼Ö¡£¨state_k£©µÄËùÓĞ²âÁ¿Êı¾İ£¬
-%                         [dt,y,omega,v],dt:Ê±¼ä¼ä¸ô y:ÌØÕ÷µãÔÚÏà»ú×ø±êÏµÏÂµÄÎ»ÖÃ omegaÊÇ»úÌå½ÇËÙ¶È²âÁ¿Öµ vÊÇÏßËÙ¶È
-%      camera£º¼ÇÂ¼ÁËÏà»úÓëIMUÖ®¼äµÄ±ä»»¹ØÏµ
-%      state_k£º¼ÇÂ¼¸ÃÖ¡IDºÅ
-%      noiseParams£ºÓÃÓÚ³õÊ¼»¯Ğ­·½²î¾ØÕó
+%è¿”å›å€¼ï¼š
+%      msckfStateï¼šå¢å¹¿åçš„çš„çŠ¶æ€ï¼ŒIMUç›¸å…³çŠ¶æ€åŠ ä¸Šä¸€ä¸ªç›¸æœºä½å§¿
+%      featureTracksï¼šè®°å½•è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹ï¼Œåˆå§‹åŒ–æ—¶ï¼Œæ‰€æœ‰çš„ç‰¹å¾ç‚¹è®¤ä¸ºéƒ½è¢«è·Ÿè¸ªåˆ°äº†
+%      trackedFeatureIdsï¼šè®°å½•è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹çš„IDå·
+%è¾“å…¥å€¼ï¼š
+%      firstImuStateï¼šIMUåˆå§‹çŠ¶æ€
+%      firstMeasurementsï¼šåˆå§‹å¸§ï¼ˆstate_kï¼‰çš„æ‰€æœ‰æµ‹é‡æ•°æ®ï¼Œ
+%                         [dt,y,omega,v],dt:æ—¶é—´é—´éš” y:ç‰¹å¾ç‚¹åœ¨ç›¸æœºåæ ‡ç³»ä¸‹çš„ä½ç½® omegaæ˜¯æœºä½“è§’é€Ÿåº¦æµ‹é‡å€¼ væ˜¯çº¿é€Ÿåº¦
+%      cameraï¼šè®°å½•äº†ç›¸æœºä¸IMUä¹‹é—´çš„å˜æ¢å…³ç³»
+%      state_kï¼šè®°å½•è¯¥å¸§IDå·
+%      noiseParamsï¼šç”¨äºåˆå§‹åŒ–åæ–¹å·®çŸ©é˜µ
 
 %INITIALIZEMSCKF Initialize the MSCKF with tracked features and ground
 %truth
 
 
 %Compute the first state
-%firstImuState:1¡¢b_g:ÍÓÂİÒÇÁãÆ«
-%              2¡¢b_v:ËÙ¶ÈÁãÆ«
-%msckfState:1¡¢imuState:imu×´Ì¬£¨p,q,b_g,b_v£©
-%           2¡¢imuCovar:imu×´Ì¬×ÔÉíĞ­·½²î 
-%           3¡¢camCovar:Ïà»ú×ÔÉíĞ­·½²î
-%           4¡¢imuCamCovar:imuÓëÏà»úÖ®¼äµÄĞ­·½²î
-%           5¡¢camStates:Ïà»ú×´Ì¬£¨p,q£©
+%firstImuState:1ã€b_g:é™€èºä»ªé›¶å
+%              2ã€b_v:é€Ÿåº¦é›¶å
+%msckfState:1ã€imuState:imuçŠ¶æ€ï¼ˆp,q,b_g,b_vï¼‰
+%           2ã€imuCovar:imuçŠ¶æ€è‡ªèº«åæ–¹å·® 
+%           3ã€camCovar:ç›¸æœºè‡ªèº«åæ–¹å·®
+%           4ã€imuCamCovar:imuä¸ç›¸æœºä¹‹é—´çš„åæ–¹å·®
+%           5ã€camStates:ç›¸æœºçŠ¶æ€ï¼ˆp,qï¼‰
 firstImuState.b_g = zeros(3,1);
 firstImuState.b_v = zeros(3,1);
 msckfState.imuState = firstImuState;
@@ -33,27 +33,27 @@ msckfState.camCovar = [];
 msckfState.imuCamCovar = [];
 msckfState.camStates = {};
 
-%º¯Êı¹¦ÄÜ£ºÍ¨¹ıµ±Ç°IMUµÄÎ»×ËµÃµ½µ±Ç°Ïà»úµÄÎ»×Ë£¬²¢½«Ïà»úµÄÎ»×ËÔö¹ãµ½×´Ì¬Á¿ÖĞ£¬ÇóÈ¡ÑÅ¿Ë±È£¬²¢¸üĞÂĞ­·½²î¾ØÕó
+%å‡½æ•°åŠŸèƒ½ï¼šé€šè¿‡å½“å‰IMUçš„ä½å§¿å¾—åˆ°å½“å‰ç›¸æœºçš„ä½å§¿ï¼Œå¹¶å°†ç›¸æœºçš„ä½å§¿å¢å¹¿åˆ°çŠ¶æ€é‡ä¸­ï¼Œæ±‚å–é›…å…‹æ¯”ï¼Œå¹¶æ›´æ–°åæ–¹å·®çŸ©é˜µ
 msckfState = augmentState(msckfState, camera, state_k);
 
 %Compute all of the relevant feature tracks
-%¼ÇÂ¼ËùÓĞ¸ú×Ùµ½µÄÌØÕ÷µã×ø±êÒÔ¼°ÌØÕ÷µãIDºÅ£¬³õÊ¼»¯Ê±£¬ËùÓĞµÄÌØÕ÷µãÒÔ¼°IDºÅ¶¼Ñ¹Èëµ½featureTracks
+%è®°å½•æ‰€æœ‰è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹åæ ‡ä»¥åŠç‰¹å¾ç‚¹IDå·ï¼Œåˆå§‹åŒ–æ—¶ï¼Œæ‰€æœ‰çš„ç‰¹å¾ç‚¹ä»¥åŠIDå·éƒ½å‹å…¥åˆ°featureTracks
 featureTracks = {};
-%¼ÇÂ¼ËùÓĞ¸ú×Ùµ½µÄÌØÕ÷µãIDºÅ£¬³õÊ¼»¯Ê±£¬ËùÓĞÌØÕ÷µãÈÏÎª¶¼±»¸ú×Ùµ½ÁË
+%è®°å½•æ‰€æœ‰è·Ÿè¸ªåˆ°çš„ç‰¹å¾ç‚¹IDå·ï¼Œåˆå§‹åŒ–æ—¶ï¼Œæ‰€æœ‰ç‰¹å¾ç‚¹è®¤ä¸ºéƒ½è¢«è·Ÿè¸ªåˆ°äº†
 trackedFeatureIds = [];
 
-%±éÀú¸ÃÖ¡£¨state_k£©ËùÓĞµÄÌØÕ÷µã
+%éå†è¯¥å¸§ï¼ˆstate_kï¼‰æ‰€æœ‰çš„ç‰¹å¾ç‚¹
  for featureId = 1:size(firstMeasurements.y,2)
-        %È¡³öÌØÕ÷µã×ø±ê
+        %å–å‡ºç‰¹å¾ç‚¹åæ ‡
         meas_k = firstMeasurements.y(:, featureId);
-        %Èç¹ûÌØÕ÷µãÓĞĞ§
+        %å¦‚æœç‰¹å¾ç‚¹æœ‰æ•ˆ
         if ~isnan(meas_k(1,1))
                 %Track new feature
 
-                %¶¨Òå½á¹¹Ìåtrack[featureId,Ïà»ú×ø±êÏÂÌØÕ÷µã×ø±ê]
+                %å®šä¹‰ç»“æ„ä½“track[featureId,ç›¸æœºåæ ‡ä¸‹ç‰¹å¾ç‚¹åæ ‡]
                 track.featureId = featureId;
                 track.observations = meas_k;
-                %¶¨Òå½á¹¹ÌåfeatureTracks[track,featureId]
+                %å®šä¹‰ç»“æ„ä½“featureTracks[track,featureId]
                 featureTracks{end+1} = track;
                 trackedFeatureIds(end+1) = featureId;
                 %Add observation to current camera

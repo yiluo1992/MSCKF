@@ -1,12 +1,12 @@
 function [r_j] = calcResidual(p_f_G, camStates, measurements)
-%º¯Êı¹¦ÄÜ£º¼ÆËãÓÅ»¯ºóÌØÕ÷3D×ø±êÓëÏà»úÆ¥ÅäÌØÕ÷µãÖ®¼äµÄÖØÍ¶Ó°²Ğ²î
+%å‡½æ•°åŠŸèƒ½ï¼šè®¡ç®—ä¼˜åŒ–åç‰¹å¾3Dåæ ‡ä¸ç›¸æœºåŒ¹é…ç‰¹å¾ç‚¹ä¹‹é—´çš„é‡æŠ•å½±æ®‹å·®
 %
-%·µ»ØÖµ£º
-%      r_j£ºÌØÕ÷µã¶ÔÓ¦µÄËùÓĞµÄ¹Û²âºÍ¹À¼ÆÖµµÄ²Ğ²î
-%ÊäÈëÖµ£º
-%      p_f_G£ºÌØÕ÷µã3D×ø±ê
-%      camStates£ºÏà»ú×´Ì¬
-%      measurements£ºÌØÕ÷µãÏà»ú×ø±êÏµÏÂ×ø±ê
+%è¿”å›å€¼ï¼š
+%      r_jï¼šç‰¹å¾ç‚¹å¯¹åº”çš„æ‰€æœ‰çš„è§‚æµ‹å’Œä¼°è®¡å€¼çš„æ®‹å·®
+%è¾“å…¥å€¼ï¼š
+%      p_f_Gï¼šç‰¹å¾ç‚¹3Dåæ ‡
+%      camStatesï¼šç›¸æœºçŠ¶æ€
+%      measurementsï¼šç‰¹å¾ç‚¹ç›¸æœºåæ ‡ç³»ä¸‹åæ ‡
 
 %CALCRESIDUAL Calculates the residual for a feature position
 
@@ -15,11 +15,11 @@ function [r_j] = calcResidual(p_f_G, camStates, measurements)
 %   included in measurements
     r_j = NaN(2*size(camStates,2), 1);
     for i = 1:size(camStates,2)
-        %½«global×ø±êÏµÏÂ3Dµã×ø±ê×ª»¯µ½camera×ø±êÏµÏÂ
+        %å°†globalåæ ‡ç³»ä¸‹3Dç‚¹åæ ‡è½¬åŒ–åˆ°cameraåæ ‡ç³»ä¸‹
         C_CG = quatToRotMat(camStates{i}.q_CG);
         p_f_C = C_CG * (p_f_G - camStates{i}.p_C_G);
-        %¼ÆËã¸ÃÌØÕ÷µã3D×ø±êÓëËùÓĞÏà»úÆ¥ÅäµãÖ®¼äµÄÖØÍ¶Ó°²Ğ²î
-        %µÃµ½ÌØÕ÷µãÔÚcamera×ø±êÏµÏÂµÄÆë´Î×ø±ê
+        %è®¡ç®—è¯¥ç‰¹å¾ç‚¹3Dåæ ‡ä¸æ‰€æœ‰ç›¸æœºåŒ¹é…ç‚¹ä¹‹é—´çš„é‡æŠ•å½±æ®‹å·®
+        %å¾—åˆ°ç‰¹å¾ç‚¹åœ¨cameraåæ ‡ç³»ä¸‹çš„é½æ¬¡åæ ‡
         zhat_i_j = p_f_C(1:2)/p_f_C(3);
         iStart = 2*(i-1)+1;
         iEnd = 2*i;
